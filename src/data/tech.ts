@@ -8,7 +8,8 @@ export type TechID =
   | 'primitiveFeast'
   | 'unlockWheel'
   | 'unlockFlour'
-  | 'unlockBread';
+  | 'unlockBread'
+  | 'baking';
 
 export interface Tech {
   id: TechID;
@@ -117,4 +118,16 @@ export const techTree: Record<TechID, Tech> = {
       actions: ['bake'],
     },
   },
+
+  baking: {
+    id: 'baking',
+    name: 'Baking',
+    description: 'Lets you bake bread from flour.',
+    icon: '🔥',
+    cost: { flour: 10, wildWheat: 10 },
+    unlocks: { actions: ['bakeBread'] },
+  },
+
+
+
 };

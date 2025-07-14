@@ -8,8 +8,7 @@ export const EatingPanel = () => {
     eatPrimitiveWheat,
     feastOnWildWheat,
     feastOnPrimitiveWheat,
-    feastUnlocked,
-    plantingUnlocked,
+    unlockedActions,
   } = useGame();
 
   return (
@@ -21,10 +20,10 @@ export const EatingPanel = () => {
           Eat 10 Wild Wheat (+5)
         </button>
 
-        {feastUnlocked && (
+        {unlockedActions.has('feast') && (
           <button
             onClick={feastOnWildWheat}
-            disabled={resources.wildWheat < 10}
+            disabled={resources.wildWheat < 10 || hunger === 100}
             style={{ marginLeft: '1rem' }}
           >
             Eat Full (Feast)
@@ -32,7 +31,7 @@ export const EatingPanel = () => {
         )}
       </div>
 
-      {plantingUnlocked && (
+      {unlockedActions.has('plantPrimitiveWheat') && (
         <div style={{ marginTop: '1rem' }}>
           <button
             onClick={eatPrimitiveWheat}
@@ -41,15 +40,15 @@ export const EatingPanel = () => {
             Eat 10 Primitive Wheat (+15)
           </button>
 
-          {feastUnlocked && (
-            <button
-              onClick={feastOnPrimitiveWheat}
-              disabled={resources.primitiveWheat < 10}
-              style={{ marginLeft: '1rem' }}
-            >
-              Eat Full (Feast)
-            </button>
-          )}
+      {unlockedActions.has('feastOnPrimitiveWheat') && (
+        <button
+          onClick={feastOnPrimitiveWheat}
+          disabled={resources.primitiveWheat < 10 || hunger === 100}
+          style={{ marginLeft: '1rem' }}
+        >
+          Eat Full (Feast)
+        </button>
+      )}
         </div>
       )}
     </section>

@@ -1,45 +1,48 @@
 import type { GameState } from '../types';
 import { performAction } from './performAction';
 
-export const harvestWildWheat = (state: GameState) => {
-  performAction(() => {
-    const { stoneToolsUnlocked } = state;
-    const baseChance = 0.51;
-    const bonusMultiplier = stoneToolsUnlocked ? 0.25 : 0;
-    const successChance = baseChance * (1 + bonusMultiplier); // = 63.75% when stone tools unlocked
+  export const harvestWildWheat = (state: GameState) => {
+    performAction(() => {
+      const hasStoneTools = state.unlockedTechs.has('stoneTools');
 
-    const chance = Math.random();
+      const baseChance = 0.51;
+      const bonusChance = hasStoneTools ? 0.25 : 0;
+      const successChance = baseChance + bonusChance;
 
-    if (chance <= successChance) {
-      const baseAmount = Math.floor(Math.random() * 3) + 1; // 1–3
-      const bonusAmount = stoneToolsUnlocked ? 2 : 0;
-      const totalAmount = baseAmount + bonusAmount;
+      const roll = Math.random();
 
-      state.setResources(prev => ({
-        ...prev,
-        wildWheat: prev.wildWheat + totalAmount,
-        seeds: prev.seeds + (Math.random() < 0.4 ? 1 : 0),
-      }));
-    }
+      if (roll <= successChance) {
+        const baseAmount = Math.floor(Math.random() * 3) + 1; // 1–3
+        const bonusAmount = hasStoneTools ? 2 : 0;
+        const total = baseAmount + bonusAmount;
 
-  }, state);
-};
+        state.setResources(prev => ({
+          ...prev,
+          wildWheat: prev.wildWheat + total,
+          seeds: prev.seeds + (Math.random() < 0.4 ? 1 : 0),
+        }));
+      }
+    }, state);
+  };
+
 
 
 export const plantPrimitiveWheat = (state: GameState) => {
   const {
-    plantingUnlocked,
+    unlockedActions,
     resources,
     primitiveWheatPlanted,
     readyToHarvestPrimitiveWheat,
   } = state;
 
   if (
-    plantingUnlocked &&
+    unlockedActions.has('plantPrimitiveWheat') &&
     resources.seeds >= 5 &&
     !primitiveWheatPlanted &&
     !readyToHarvestPrimitiveWheat
   ) {
+    console.log("🌾 Plant action triggered");
+
     performAction(() => {
       state.setResources(prev => ({
         ...prev,

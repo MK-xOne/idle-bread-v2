@@ -2,33 +2,32 @@ import type { GameState } from '../types';
 import { performAction } from './performAction';
 
 export const grindFlour = (state: GameState) => {
-  const {
-    wheelUnlocked,
-    resources,
-    setResources,
-    grindClicks,
-    setGrindClicks,
-  } = state;
+  const { resources, grindClicks } = state;
 
-  if (!wheelUnlocked) return;
+  if (resources.primitiveWheat < 1 && grindClicks === 0) return;
 
   performAction(() => {
-    const requiredClicks = 5;
-    const requiredWheat = 5;
-
-    // If already reached enough clicks and have enough wheat
-    if (grindClicks + 1 >= requiredClicks && resources.primitiveWheat >= requiredWheat) {
-      setResources(prev => ({
+    if (resources.primitiveWheat >= 1) {
+      state.setResources(prev => ({
         ...prev,
-        primitiveWheat: prev.primitiveWheat - requiredWheat,
-        flour: prev.flour + 1,
+        primitiveWheat: prev.primitiveWheat - 1,
       }));
-      setGrindClicks(0);
-    } else {
-      setGrindClicks(prev => prev + 1);
+
+      state.setGrindClicks(prev => {
+        const next = prev + 1;
+        if (next >= 5) {
+          state.setGrindClicks(0);
+          state.setResources(prev => ({
+            ...prev,
+            flour: prev.flour + 1,
+          }));
+        }
+        return next;
+      });
     }
   }, state);
 };
+
 
 export const bakeBread = (state: GameState) => {
   const {

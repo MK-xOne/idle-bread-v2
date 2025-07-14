@@ -10,6 +10,8 @@ export interface GameContextType {
 
   unlockedTechs: Set<TechID>;
   unlockTech: (techId: TechID) => void;
+  
+  unlockedActions: Set<string>;
 
   primitiveWheatPlanted: boolean;
   setPrimitiveWheatPlanted: React.Dispatch<React.SetStateAction<boolean>>;

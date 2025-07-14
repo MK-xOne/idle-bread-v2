@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import type { GameContextType } from './types';
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
+import { techTree } from '../data/tech';
+
 
 import {
   harvestWildWheat,
@@ -23,7 +25,6 @@ import {
   eatBread,
 } from './actions/breadActions';
 
-import { discoverFire } from './actions/fireActions';
 import { performAction } from './actions/performAction';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -46,7 +47,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const tech = techTree[techId];
     if (!tech) return;
 
-    setUnlockedTechs(prev => new Set(prev).add(techId));
+    console.log('[unlocking tech]', techId); // ← Add this
+
+
+  setUnlockedTechs(prev => {
+    const updated = new Set(prev);
+    updated.add(techId);
+    console.log('unlockTech – new unlockedTechs:', Array.from(updated)); // 👉 Add this
+    return updated;
+  });
     if (tech.unlocks?.actions) {
       setUnlockedActions(prev => {
         const newSet = new Set(prev);
@@ -113,3 +122,5 @@ export const useGame = () => {
   if (!context) throw new Error('useGame must be used within GameProvider');
   return context;
 };
+
+export default GameProvider;

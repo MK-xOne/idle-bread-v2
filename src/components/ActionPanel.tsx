@@ -10,11 +10,13 @@ export const ActionPanel = () => {
     resources,
     primitiveWheatPlanted,
     readyToHarvestPrimitiveWheat,
-    unlockedActions,
     grindClicks,
     bakeClicks,
     actionsSincePlanting,
+    unlockedActions,
+    unlockedTechs,
   } = useGame();
+
 
   return (
     <section style={{ marginTop: '2rem' }}>
@@ -43,7 +45,7 @@ export const ActionPanel = () => {
         </div>
       )}
 
-      {unlockedActions.has('grindFlour') && (
+      {unlockedActions.has('grindFlour') && unlockedTechs.has('unlockWheel') && (
         <div style={{ marginBottom: '1rem' }}>
           <button
             onClick={grindFlour}
@@ -54,7 +56,7 @@ export const ActionPanel = () => {
         </div>
       )}
 
-      {unlockedActions.has('bake') && (
+      {unlockedTechs.has('discoverFire') && unlockedTechs.has('baking') && (
         <div>
           <button
             onClick={bakeBread}
