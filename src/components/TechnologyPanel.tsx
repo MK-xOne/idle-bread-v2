@@ -1,105 +1,62 @@
 import { useGame } from '../context/GameProvider';
+import { techTree } from '../data/tech';
 
 export const TechnologyPanel = () => {
   const {
+    unlockedTechs,
+    unlockTech,
     resources,
+    setResources,
     hunger,
-    fireDiscovered,
-    setFireDiscovered,
-    plantingUnlocked,
-    setPlantingUnlocked,
-    wheelUnlocked,
-    setWheelUnlocked,
-    bakingUnlocked,
-    setBakingUnlocked,
-    feastUnlocked,
-    setFeastUnlocked,
+    performAction,
   } = useGame();
 
-  // Unlock handlers
-  const unlockFire = () => {
-    if (resources.wildWheat >= 20) {
-      setFireDiscovered(true);
-    }
+  const canAfford = (cost: Partial<Record<string, number>>) => {
+    return Object.entries(cost).every(
+      ([key, amount]) => (resources as any)[key] >= amount
+    );
   };
 
-  const unlockPlanting = () => {
-    if (resources.seeds >= 25) {
-      setPlantingUnlocked(true);
-    }
-  };
+  const handleUnlock = (techId: keyof typeof techTree) => {
+    const tech = techTree[techId];
+    if (!canAfford(tech.cost)) return;
 
-  const unlockWheel = () => {
-    if (resources.primitiveWheat >= 30) {
-      setWheelUnlocked(true);
-    }
-  };
+    performAction(() => {
+      // Deduct cost using setResources
+      setResources(prev => {
+        const updated = { ...prev };
+        for (const [res, amt] of Object.entries(tech.cost)) {
+          updated[res as keyof typeof updated] -= amt!;
+        }
+        return updated;
+      });
 
-  const unlockBaking = () => {
-    if (resources.flour >= 10) {
-      setBakingUnlocked(true);
-    }
-  };
-
-  const unlockFeast = () => {
-    if (resources.seeds >= 25 && resources.primitiveWheat >= 50) {
-      setFeastUnlocked(true);
-    }
+      unlockTech(techId);
+    });
   };
 
   return (
     <section style={{ marginTop: '2rem' }}>
       <h3>🧠 Technologies</h3>
 
-      {/* Fire */}
-      {!fireDiscovered && (
-        <button
-          onClick={unlockFire}
-          disabled={resources.wildWheat < 20}
-        >
-          🔥 Discover Fire (20 Wild Wheat)
-        </button>
-      )}
+      {Object.values(techTree).map((tech) => {
+        const isUnlocked = unlockedTechs.has(tech.id);
 
-      {/* Planting */}
-      {fireDiscovered && !plantingUnlocked && (
-        <button
-          onClick={unlockPlanting}
-          disabled={resources.seeds < 25}
-        >
-          🌱 Unlock Planting (25 Seeds)
-        </button>
-      )}
-
-      {/* Wheel */}
-      {plantingUnlocked && !wheelUnlocked && (
-        <button
-          onClick={unlockWheel}
-          disabled={resources.primitiveWheat < 30}
-        >
-          🛞 Unlock Wheel (30 Primitive Wheat)
-        </button>
-      )}
-
-      {/* Baking */}
-      {wheelUnlocked && !bakingUnlocked && (
-        <button
-          onClick={unlockBaking}
-          disabled={resources.flour < 10}
-        >
-          🔧 Unlock Baking (10 Flour)
-        </button>
-      )}
-
-      {/* Feast */}
-      {plantingUnlocked && !feastUnlocked && (
-        <button
-          onClick={unlockFeast}
-          disabled={resources.seeds < 25 || resources.primitiveWheat < 50}
-        >
-          🍽 Unlock Feast (25 Seeds + 50 Primitive Wheat)
-        </button>
-      )}
+        return (
+          <button
+            key={tech.id}
+            onClick={() => handleUnlock(tech.id)}
+            disabled={isUnlocked || !canAfford(tech.cost) || hunger <= 0}
+            style={{ opacity: isUnlocked ? 0.5 : 1, display: 'block', marginBottom: '0.5rem' }}
+          >
+            {tech.icon} {tech.name}{' '}
+            {!isUnlocked &&
+              `(${Object.entries(tech.cost)
+                .map(([k, v]) => `${v} ${k}`)
+                .join(' + ')})`}
+          </button>
+        );
+      })}
     </section>
   );
 };

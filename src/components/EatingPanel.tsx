@@ -5,7 +5,7 @@ export const EatingPanel = () => {
     hunger,
     resources,
     eatWildWheat,
-    eatPrimitiveWheat, 
+    eatPrimitiveWheat,
     feastOnWildWheat,
     feastOnPrimitiveWheat,
     feastUnlocked,
@@ -17,14 +17,14 @@ export const EatingPanel = () => {
       <h3>🍽 Eat</h3>
 
       <div>
-        <button onClick={eatWildWheat} disabled={resources.wildWheat < 10 || hunger === 100}>
+        <button onClick={eatWildWheat} disabled={resources.wildWheat < 10}>
           Eat 10 Wild Wheat (+5)
         </button>
 
         {feastUnlocked && (
           <button
             onClick={feastOnWildWheat}
-            disabled={resources.wildWheat < 10 || hunger === 100}
+            disabled={resources.wildWheat < 10}
             style={{ marginLeft: '1rem' }}
           >
             Eat Full (Feast)
@@ -35,8 +35,8 @@ export const EatingPanel = () => {
       {plantingUnlocked && (
         <div style={{ marginTop: '1rem' }}>
           <button
-            onClick={eatPrimitiveWheat} 
-            disabled={resources.primitiveWheat < 10 || hunger === 100}
+            onClick={eatPrimitiveWheat}
+            disabled={resources.primitiveWheat < 10}
           >
             Eat 10 Primitive Wheat (+15)
           </button>
@@ -44,7 +44,7 @@ export const EatingPanel = () => {
           {feastUnlocked && (
             <button
               onClick={feastOnPrimitiveWheat}
-              disabled={resources.primitiveWheat < 10 || hunger === 100}
+              disabled={resources.primitiveWheat < 10}
               style={{ marginLeft: '1rem' }}
             >
               Eat Full (Feast)

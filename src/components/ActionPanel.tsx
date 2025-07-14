@@ -10,10 +10,7 @@ export const ActionPanel = () => {
     resources,
     primitiveWheatPlanted,
     readyToHarvestPrimitiveWheat,
-    plantingUnlocked,
-    wheelUnlocked,
-    fireDiscovered,
-    bakingUnlocked,
+    unlockedActions,
     grindClicks,
     bakeClicks,
     actionsSincePlanting,
@@ -27,14 +24,14 @@ export const ActionPanel = () => {
         <button onClick={harvestWildWheat}>Harvest Wild Wheat</button>
       </div>
 
-      {plantingUnlocked && (
+      {unlockedActions.has('plantPrimitiveWheat') && (
         <div style={{ marginBottom: '1rem' }}>
           {!primitiveWheatPlanted && !readyToHarvestPrimitiveWheat ? (
             <button
               onClick={plantPrimitiveWheat}
               disabled={resources.seeds < 5}
             >
-              Plant Primitive Wheat (-5 seeds)
+              🌾 Plant Primitive Wheat (5 seeds)
             </button>
           ) : readyToHarvestPrimitiveWheat ? (
             <button onClick={harvestPrimitiveWheat}>
@@ -46,18 +43,18 @@ export const ActionPanel = () => {
         </div>
       )}
 
-      {wheelUnlocked && (
+      {unlockedActions.has('grindFlour') && (
         <div style={{ marginBottom: '1rem' }}>
           <button
             onClick={grindFlour}
             disabled={resources.primitiveWheat < 5 && grindClicks === 0}
           >
-            Grind Flour ({grindClicks}/5)
+            Grind Wheat ({grindClicks}/5)
           </button>
         </div>
       )}
 
-      {fireDiscovered && bakingUnlocked && (
+      {unlockedActions.has('bake') && (
         <div>
           <button
             onClick={bakeBread}

@@ -1,6 +1,10 @@
 import type { GameState } from '../types';
 
-export const performAction = (callback: () => void, state: GameState) => {
+export const performAction = (
+  callback: () => void,
+  state: GameState,
+  options?: { allowWhenStarving?: boolean }
+) => {
   const {
     hunger,
     setHunger,
@@ -10,8 +14,10 @@ export const performAction = (callback: () => void, state: GameState) => {
     setReadyToHarvestPrimitiveWheat,
   } = state;
 
-  if (hunger <= 0) return;
+  // Prevent action if starving unless override is allowed
+  if (hunger <= 0 && !options?.allowWhenStarving) return;
 
+  // Track growth of primitive wheat
   if (primitiveWheatPlanted && !readyToHarvestPrimitiveWheat) {
     setActionsSincePlanting(prev => {
       const next = prev + 1;
@@ -22,6 +28,11 @@ export const performAction = (callback: () => void, state: GameState) => {
     });
   }
 
+  // Run the action logic
   callback();
-  setHunger(prev => Math.max(0, prev - 1));
+
+  // Only reduce hunger if it's not an "eating while starving" exception
+  if (!options?.allowWhenStarving) {
+    setHunger(prev => Math.max(0, prev - 1));
+  }
 };

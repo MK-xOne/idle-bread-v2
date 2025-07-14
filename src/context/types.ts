@@ -1,56 +1,41 @@
-import type { Dispatch, SetStateAction } from 'react';
+import type { ResourceID } from '../data/resources';
+import type { TechID } from '../data/tech';
 
-export type ResourceID = 'wildWheat' | 'primitiveWheat' | 'seeds' | 'flour' | 'bread';
-
-export interface GameState {
-  hunger: number;
-  setHunger: Dispatch<SetStateAction<number>>;
-
+export interface GameContextType {
   resources: Record<ResourceID, number>;
-  setResources: Dispatch<SetStateAction<Record<ResourceID, number>>>;
+  setResources: React.Dispatch<React.SetStateAction<Record<ResourceID, number>>>;
 
-  feastUnlocked: boolean;
-  plantingUnlocked: boolean;
-  wheelUnlocked: boolean;
-  fireDiscovered: boolean;
+  hunger: number;
+  setHunger: React.Dispatch<React.SetStateAction<number>>;
+
+  unlockedTechs: Set<TechID>;
+  unlockTech: (techId: TechID) => void;
 
   primitiveWheatPlanted: boolean;
-  setPrimitiveWheatPlanted: Dispatch<SetStateAction<boolean>>;
+  setPrimitiveWheatPlanted: React.Dispatch<React.SetStateAction<boolean>>;
 
   actionsSincePlanting: number;
-  setActionsSincePlanting: Dispatch<SetStateAction<number>>;
+  setActionsSincePlanting: React.Dispatch<React.SetStateAction<number>>;
 
   readyToHarvestPrimitiveWheat: boolean;
-  setReadyToHarvestPrimitiveWheat: Dispatch<SetStateAction<boolean>>;
-
-  setFeastUnlocked: Dispatch<SetStateAction<boolean>>;
-  setPlantingUnlocked: Dispatch<SetStateAction<boolean>>;
-  setWheelUnlocked: Dispatch<SetStateAction<boolean>>;
-  setFireDiscovered: Dispatch<SetStateAction<boolean>>;
+  setReadyToHarvestPrimitiveWheat: React.Dispatch<React.SetStateAction<boolean>>;
 
   grindClicks: number;
-  setGrindClicks: Dispatch<SetStateAction<number>>;
+  setGrindClicks: React.Dispatch<React.SetStateAction<number>>;
 
   bakeClicks: number;
-  setBakeClicks: Dispatch<SetStateAction<number>>;
-}
+  setBakeClicks: React.Dispatch<React.SetStateAction<number>>;
 
-export interface GameContextType extends GameState {
+  // Core action methods
   performAction: (cb: () => void) => void;
-
   harvestWildWheat: () => void;
+  plantPrimitiveWheat: () => void;
+  harvestPrimitiveWheat: () => void;
   eatWildWheat: () => void;
   eatPrimitiveWheat: () => void;
-
-  feastOnWildWheat: () => void;
-  feastOnPrimitiveWheat: () => void;
-
-  discoverFire: () => void;
-
   grindFlour: () => void;
   bakeBread: () => void;
   eatBread: () => void;
-
-  plantPrimitiveWheat: () => void;
-  harvestPrimitiveWheat: () => void;
+  feastOnWildWheat: () => void;
+  feastOnPrimitiveWheat: () => void;
 }

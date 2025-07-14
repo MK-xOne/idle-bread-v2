@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 1.5rem;
+  justify-items: stretch;
+  align-items: start;
+}
+
+.panel {
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+

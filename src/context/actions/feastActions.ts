@@ -11,7 +11,7 @@ export const feastOnWildWheat = (state: GameState) => {
         wildWheat: prev.wildWheat - 10,
       }));
       state.setHunger(100);
-    }, state);
+    }, state, { allowWhenStarving: true });
   }
 };
 
@@ -25,6 +25,6 @@ export const feastOnPrimitiveWheat = (state: GameState) => {
         primitiveWheat: prev.primitiveWheat - 10,
       }));
       state.setHunger(100);
-    }, state);
+    }, state, { allowWhenStarving: true });
   }
 };

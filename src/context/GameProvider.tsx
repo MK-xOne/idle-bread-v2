@@ -1,6 +1,8 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { GameContextType, GameState, ResourceID } from './types';
+import type { GameContextType } from './types';
+import type { ResourceID } from '../data/resources';
+import type { TechID } from '../data/tech';
 
 import {
   harvestWildWheat,
@@ -27,24 +29,6 @@ import { performAction } from './actions/performAction';
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
-  // Core states
-  const [hunger, setHunger] = useState(100);
-  const [feastUnlocked, setFeastUnlocked] = useState(false);
-  const [fireDiscovered, setFireDiscovered] = useState(false);
-  const [plantingUnlocked, setPlantingUnlocked] = useState(false);
-  const [wheelUnlocked, setWheelUnlocked] = useState(false);
-  const [bakingUnlocked, setBakingUnlocked] = useState(false);
-
-  // Primitive wheat planting/growth states
-  const [primitiveWheatPlanted, setPrimitiveWheatPlanted] = useState(false);
-  const [actionsSincePlanting, setActionsSincePlanting] = useState(0);
-  const [readyToHarvestPrimitiveWheat, setReadyToHarvestPrimitiveWheat] = useState(false);
-
-  // Click counters for grinding and baking
-  const [grindClicks, setGrindClicks] = useState(0);
-  const [bakeClicks, setBakeClicks] = useState(0);
-
-  // Resources inventory
   const [resources, setResources] = useState<Record<ResourceID, number>>({
     wildWheat: 0,
     primitiveWheat: 0,
@@ -53,66 +37,70 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     bread: 0,
   });
 
-  // Compose game state for actions
-  const gameState: GameState = {
+  const [hunger, setHunger] = useState(100);
+
+  const [unlockedActions, setUnlockedActions] = useState<Set<string>>(new Set());
+
+  const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
+  const unlockTech = (techId: TechID) => {
+    const tech = techTree[techId];
+    if (!tech) return;
+
+    setUnlockedTechs(prev => new Set(prev).add(techId));
+    if (tech.unlocks?.actions) {
+      setUnlockedActions(prev => {
+        const newSet = new Set(prev);
+        tech.unlocks.actions!.forEach(action => newSet.add(action));
+        return newSet;
+      });
+    }
+  };
+
+
+  const [primitiveWheatPlanted, setPrimitiveWheatPlanted] = useState(false);
+  const [actionsSincePlanting, setActionsSincePlanting] = useState(0);
+  const [readyToHarvestPrimitiveWheat, setReadyToHarvestPrimitiveWheat] = useState(false);
+
+  const [grindClicks, setGrindClicks] = useState(0);
+  const [bakeClicks, setBakeClicks] = useState(0);
+
+  const gameState = {
     hunger,
     setHunger,
     resources,
     setResources,
-    feastUnlocked,
-    plantingUnlocked,
-    wheelUnlocked,
-    bakingUnlocked,
     primitiveWheatPlanted,
     setPrimitiveWheatPlanted,
     actionsSincePlanting,
     setActionsSincePlanting,
     readyToHarvestPrimitiveWheat,
     setReadyToHarvestPrimitiveWheat,
-    fireDiscovered,
-    setFireDiscovered,
     grindClicks,
     setGrindClicks,
     bakeClicks,
     setBakeClicks,
+    unlockedTechs,
+    unlockTech,
+    unlockedActions,
+
   };
 
   return (
     <GameContext.Provider
       value={{
-        hunger,
-        setHunger,
-        resources,
-        setResources,
+        ...gameState,
+        unlockedActions,
         performAction: (cb) => performAction(cb, gameState),
         harvestWildWheat: () => harvestWildWheat(gameState),
+        plantPrimitiveWheat: () => plantPrimitiveWheat(gameState),
+        harvestPrimitiveWheat: () => harvestPrimitiveWheat(gameState),
         eatWildWheat: () => eatWildWheat(gameState),
         eatPrimitiveWheat: () => eatPrimitiveWheat(gameState),
-        feastUnlocked,
-        setFeastUnlocked,
-        feastOnWildWheat: () => feastOnWildWheat(gameState),
-        feastOnPrimitiveWheat: () => feastOnPrimitiveWheat(gameState),
-        fireDiscovered,
-        setFireDiscovered,
-        discoverFire: () => discoverFire(gameState),
-        plantingUnlocked,
-        setPlantingUnlocked,
-        wheelUnlocked,
-        setWheelUnlocked,
-        bakingUnlocked,
-        setBakingUnlocked,
         grindFlour: () => grindFlour(gameState),
         bakeBread: () => bakeBread(gameState),
         eatBread: () => eatBread(gameState),
-        plantPrimitiveWheat: () => plantPrimitiveWheat(gameState),
-        harvestPrimitiveWheat: () => harvestPrimitiveWheat(gameState),
-        primitiveWheatPlanted,
-        actionsSincePlanting,
-        readyToHarvestPrimitiveWheat,
-        grindClicks,
-        setGrindClicks,
-        bakeClicks,
-        setBakeClicks,
+        feastOnWildWheat: () => feastOnWildWheat(gameState),
+        feastOnPrimitiveWheat: () => feastOnPrimitiveWheat(gameState),
       }}
     >
       {children}

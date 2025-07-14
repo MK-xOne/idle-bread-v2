@@ -2,6 +2,7 @@ import type { ResourceID } from './resources';
 
 export type TechID = 
   | 'discoverFire'
+  | 'stoneTools'
   | 'unlockPlanting'
   | 'unlockFeast'
   | 'primitiveFeast'
@@ -13,6 +14,7 @@ export interface Tech {
   id: TechID;
   name: string;
   description: string;
+  icon: string;
   cost: Partial<Record<ResourceID, number>>;
   unlockedByDefault?: boolean;
   unlocks: {
@@ -27,64 +29,89 @@ export const techTree: Record<TechID, Tech> = {
     id: 'discoverFire',
     name: 'Discover Fire',
     description: 'Control the flame to change everything.',
+    icon: '🔥',
     cost: { wildWheat: 20 },
     unlocks: {
       actions: ['bake', 'cook'],
-      techs: ['unlockPlanting', 'primitiveFeast'],
+      techs: ['stoneTools', 'unlockPlanting', 'primitiveFeast'],
     },
   },
+
+  stoneTools: {
+    id: 'stoneTools',
+    name: 'Stone Tools',
+    description: 'Increase wild wheat harvest and success rate.',
+    icon: '🔨',
+    cost: { wildWheat: 25, seeds: 10 },
+    unlocks: {
+      actions: [],
+    },
+  },
+
   unlockPlanting: {
     id: 'unlockPlanting',
     name: 'Unlock Planting',
     description: 'From gatherer to grower.',
-    cost: { seeds: 25 },
+    icon: '🌱',
+    cost: { seeds: 30 },
     unlocks: {
       resources: ['primitiveWheat'],
+      actions: ['plantPrimitiveWheat'],
     },
   },
+
   unlockFeast: {
     id: 'unlockFeast',
     name: 'Feast',
     description: 'Unlock the ability to eat full meals.',
-    cost: { seeds: 50, primitiveWheat: 10 },
+    icon: '🥙',
+    cost: { seeds: 30, primitiveWheat: 50, wildWheat: 100 },
     unlocks: {
       actions: ['feast'],
     },
   },
+
   primitiveFeast: {
     id: 'primitiveFeast',
     name: 'Primitive Feast',
     description: 'Prepare your first full meal.',
-    cost: { wildWheat: 30, primitiveWheat: 15 },
+    icon: '🥙',
+    cost: { wildWheat: 200, primitiveWheat: 100 },
     unlocks: {
       actions: ['feast'],
     },
   },
+
   unlockWheel: {
     id: 'unlockWheel',
     name: 'Unlock the Wheel',
     description: 'Start processing grain efficiently.',
-    cost: { primitiveWheat: 30 },
+    icon: '🛞',
+    cost: { primitiveWheat: 100 },
     unlocks: {
       resources: ['flour'],
       techs: ['unlockFlour'],
     },
   },
+
   unlockFlour: {
     id: 'unlockFlour',
     name: 'Grind Flour',
     description: 'Turn wheat into flour.',
-    cost: {},
+    icon: '🪨',
+    cost: {wildWheat: 250, primitiveWheat: 150},
     unlockedByDefault: true,
     unlocks: {
       actions: ['grindFlour'],
     },
   },
+
   unlockBread: {
     id: 'unlockBread',
     name: 'Bake Bread',
     description: 'Bake bread using flour.',
-    cost: { flour: 3 },
+    icon: '🍞',
+    cost: { flour: 50 },
     unlocks: {
       resources: ['bread'],
       actions: ['bake'],
