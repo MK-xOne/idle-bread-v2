@@ -23,7 +23,7 @@ export const harvestWildWheat = (state: GameState) => {
 
       state.setResources(prev => {
         const current = prev.wildWheat;
-        const max = resourceMeta.wildWheat?.maxAmount ?? Infinity;
+        const max = resources.wildWheat?.maxAmount ?? Infinity;
         const newAmount = Math.min(current + total, max);
 
         return {
@@ -72,7 +72,6 @@ export const plantPrimitiveWheat = (state: GameState) => {
        
         state.discoverResource("primitiveWheat");
         state.setResources(prev => {
-        state.setResources(prev => {
           const current = prev.primitiveWheat;
           const max = resources.primitiveWheat.maxAmount ?? Infinity;
           const harvested = 10;
@@ -88,8 +87,8 @@ export const plantPrimitiveWheat = (state: GameState) => {
         state.setReadyToHarvestPrimitiveWheat(false);
         state.setActionsSincePlanting(0);
       }, state);
-    })
-  }};
+    }
+  };
 
 export const eatWildWheat = (state: GameState) => {
   const { resources, hunger } = state;

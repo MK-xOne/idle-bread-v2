@@ -9,6 +9,9 @@ const formatLabel = (id: string) =>
 export const InventoryDisplay = () => {
   const { resources, discoveredResources } = useGame();
 
+console.log("🔥 Discovered:", Array.from(discoveredResources));
+console.log("🌾 Wild Wheat:", resources.wildWheat);
+
   return (
     <section style={{ marginBottom: '1.5rem' }}>
       <h3>📦 Inventory</h3>

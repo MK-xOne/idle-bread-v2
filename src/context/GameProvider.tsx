@@ -91,6 +91,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setHunger,
     resources,
     setResources,
+    discoverResource,
     primitiveWheatPlanted,
     setPrimitiveWheatPlanted,
     actionsSincePlanting,
@@ -110,7 +111,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameContext.Provider
       value={{
-        ...gameState,
+        ...gameState, // includes: resources, setResources, etc.
         unlockedActions,
         discoveredResources,
         setDiscoveredResources,
