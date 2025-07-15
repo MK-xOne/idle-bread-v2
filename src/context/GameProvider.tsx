@@ -4,28 +4,8 @@ import type { GameContextType } from './types';
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
 import { techTree } from '../data/tech';
-
-
-import {
-  harvestWildWheat,
-  eatWildWheat,
-  eatPrimitiveWheat,
-  plantPrimitiveWheat,
-  harvestPrimitiveWheat,
-} from './actions/wheatActions';
-
-import {
-  feastOnWildWheat,
-  feastOnPrimitiveWheat,
-} from './actions/feastActions';
-
-import {
-  grindFlour,
-  bakeBread,
-  eatBread,
-} from './actions/breadActions';
-
 import { performAction } from './actions/performAction';
+import { performNamedAction as doNamedAction } from './actions/performNamedAction';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -53,7 +33,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
    });
   };
 
-  const [unlockedActions, setUnlockedActions] = useState<Set<string>>(new Set());
+  const [unlockedActions, setUnlockedActions] = useState<Set<string>>(
+    new Set(["harvest_wildWheat", "eat_wildWheat"])
+  );
 
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
   const unlockTech = (techId: TechID) => {
@@ -111,26 +93,27 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameContext.Provider
       value={{
-        ...gameState, // includes: resources, setResources, etc.
+        ...gameState,
         unlockedActions,
         discoveredResources,
         setDiscoveredResources,
         discoverResource,
         performAction: (cb) => performAction(cb, gameState),
-        harvestWildWheat: () => harvestWildWheat(gameState),
-        plantPrimitiveWheat: () => plantPrimitiveWheat(gameState),
-        harvestPrimitiveWheat: () => harvestPrimitiveWheat(gameState),
-        eatWildWheat: () => eatWildWheat(gameState),
-        eatPrimitiveWheat: () => eatPrimitiveWheat(gameState),
-        grindFlour: () => grindFlour(gameState),
-        bakeBread: () => bakeBread(gameState),
-        eatBread: () => eatBread(gameState),
-        feastOnWildWheat: () => feastOnWildWheat(gameState),
-        feastOnPrimitiveWheat: () => feastOnPrimitiveWheat(gameState),
+        performNamedAction: (id: string) => {
+          const [actionType, resourceId] = id.split('_');
+          performAction(
+            () => {
+              doNamedAction(gameState, resourceId as ResourceID, actionType);
+            },
+            gameState,
+            { allowWhenStarving: actionType === 'eat' || actionType === 'feast' }
+          );
+        }
       }}
     >
       {children}
     </GameContext.Provider>
+
   );
 };
 

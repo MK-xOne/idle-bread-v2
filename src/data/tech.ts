@@ -8,8 +8,7 @@ export type TechID =
   | 'primitiveFeast'
   | 'unlockWheel'
   | 'unlockFlour'
-  | 'unlockBread'
-  | 'baking';
+  | 'unlockBread';
 
 export interface Tech {
   id: TechID;
@@ -33,7 +32,6 @@ export const techTree: Record<TechID, Tech> = {
     icon: '🔥',
     cost: { wildWheat: 20 },
     unlocks: {
-      actions: ['bake', 'cook'],
       techs: ['stoneTools', 'unlockPlanting', 'primitiveFeast'],
     },
   },
@@ -44,9 +42,7 @@ export const techTree: Record<TechID, Tech> = {
     description: 'Increase wild wheat harvest and success rate.',
     icon: '🔨',
     cost: { wildWheat: 25, seeds: 10 },
-    unlocks: {
-      actions: [],
-    },
+    unlocks: {}, // Could have passive effects in future
   },
 
   unlockPlanting: {
@@ -57,7 +53,7 @@ export const techTree: Record<TechID, Tech> = {
     cost: { seeds: 30 },
     unlocks: {
       resources: ['primitiveWheat'],
-      actions: ['plantPrimitiveWheat'],
+      actions: ['plant_primitiveWheat'],
     },
   },
 
@@ -79,7 +75,7 @@ export const techTree: Record<TechID, Tech> = {
     icon: '🥙',
     cost: { wildWheat: 200, primitiveWheat: 100 },
     unlocks: {
-      actions: ['feast'],
+      actions: ['feast'], // You can eventually merge this with unlockFeast
     },
   },
 
@@ -100,10 +96,10 @@ export const techTree: Record<TechID, Tech> = {
     name: 'Grind Flour',
     description: 'Turn wheat into flour.',
     icon: '🪨',
-    cost: {wildWheat: 250, primitiveWheat: 150},
+    cost: { wildWheat: 250, primitiveWheat: 150 },
     unlockedByDefault: true,
     unlocks: {
-      actions: ['grindFlour'],
+      actions: ['grind'],
     },
   },
 
@@ -118,16 +114,4 @@ export const techTree: Record<TechID, Tech> = {
       actions: ['bake'],
     },
   },
-
-  baking: {
-    id: 'baking',
-    name: 'Baking',
-    description: 'Lets you bake bread from flour.',
-    icon: '🔥',
-    cost: { flour: 10, wildWheat: 10 },
-    unlocks: { actions: ['bakeBread'] },
-  },
-
-
-
 };
