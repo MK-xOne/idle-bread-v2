@@ -1,7 +1,7 @@
 import type { GameState } from "../context/types";
 import type { ResourceID } from "./resources";
 import { resources } from '../data/resources';
-
+import { effectModifiers } from './effectModifiers';
 
 // ---- Action Types ----
 
@@ -35,6 +35,10 @@ export const actionLabels: Record<ActionType, { label: string; description?: str
     label: "🌱 Plant",
     description: "Use seeds to grow primitive wheat over time.",
   },
+  grow: {
+    label: "🌱 Growing",
+    description: "The seeds planted are now growing."  
+  },
   grind: {
     label: "🌀 Grind",
     description: "Manually grind wheat into flour by clicking.",
@@ -52,26 +56,49 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     if (!resourceId) return false;
 
     const def = resources[resourceId];
-    const maxAmount = def?.harvestAmount ?? 0;
-    const amount = Math.floor(Math.random() * maxAmount) + 1;
+    const baseRange = def?.harvestAmount ?? [0, 0];
 
-    if (amount <= 0) return false;
+    const bonus = state.modifiers?.harvestBonus?.[resourceId] ?? {};
+    const successRateBonus = bonus.successRateBonus ?? 0;
+    const extraRange = bonus.extraYieldRange ?? [0, 0];
+
+    // 🌱 Determine if harvest is successful (75% base + bonus)
+    const successChance = 0.75 + successRateBonus;
+    if (Math.random() > successChance) return false;
+
+    // 🌾 Calculate base + bonus yield
+    const baseAmount = Math.floor(Math.random() * (baseRange[1] - baseRange[0] + 1)) + baseRange[0];
+    const extraAmount = Math.floor(Math.random() * (extraRange[1] - extraRange[0] + 1)) + extraRange[0];
+    const totalAmount = baseAmount + extraAmount;
+
+    if (totalAmount <= 0) return false;
+
+    const current = state.resources[resourceId];
+    const max = def?.maxAmount ?? Infinity;
+    const newAmount = Math.min(current + totalAmount, max);
 
     state.setResources(prev => ({
       ...prev,
-      [resourceId]: prev[resourceId] + amount,
+      [resourceId]: newAmount,
     }));
 
     state.discoverResource(resourceId);
 
-    // Passive effects (like seeds from wild wheat)
+    // 🔁 Passive effects
     Object.values(resources).forEach(res => {
       res.onHarvestFrom?.(resourceId, state);
     });
 
+    // 🔄 Primitive wheat special case
+    if (resourceId === "primitiveWheat") {
+      state.setPrimitiveWheatPlanted(false);
+      state.setReadyToHarvestPrimitiveWheat(false);
+      state.setActionsSincePlanting(0);
+      console.log('[HARVEST] primitive wheat reset after harvest');
+    }
+
     return true;
   },
-
 
   eat: (state, resourceId) => {
     if (!resourceId) return false;
@@ -128,8 +155,10 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
         seeds: prev.seeds - 5,
       }));
       state.setPrimitiveWheatPlanted(true);
+      console.log('[PLANT] primitive wheat planted!');
       state.setActionsSincePlanting(0);
       state.setReadyToHarvestPrimitiveWheat(false);
+      mechanics.grow(state);
       return true;
     }
 
@@ -149,8 +178,11 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
         const next = prev + 1;
         if (next >= 20) {
           setReadyToHarvestPrimitiveWheat(true);
+          state.discoverResource('primitiveWheat'); 
+
         }
         return next;
+        console.log('[GROW] growing tick triggered');
       });
     }
 

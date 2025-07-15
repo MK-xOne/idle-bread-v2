@@ -11,17 +11,17 @@ export const performAction = (
     setHunger,
   } = state;
 
-  // Prevent action if starving unless override is allowed
+  // ✅ Block actions when starving unless allowed
   if (hunger <= 0 && !options?.allowWhenStarving) return;
 
-  // Run the action logic
+  // ✅ Run the action
   callback();
 
-  // Reduce hunger (unless eating/feasting while starving)
+  // ✅ Passive growth trigger
+  mechanics.grow(state);
+
+  // ✅ Reduce hunger only if not exempt
   if (!options?.allowWhenStarving) {
     setHunger(prev => Math.max(0, prev - 1));
   }
-
-  // ✅ Trigger grow passively after any action
-  mechanics.grow(state);
 };

@@ -1,4 +1,5 @@
 import type { ResourceID } from './resources';
+import { effectModifiers } from "./effectModifiers";
 
 export type TechID = 
   | 'discoverFire'
@@ -21,6 +22,7 @@ export interface Tech {
     resources?: ResourceID[];
     actions?: string[];
     techs?: TechID[];
+    effects?:effectModifiers[];
   };
 }
 
@@ -42,7 +44,16 @@ export const techTree: Record<TechID, Tech> = {
     description: 'Increase wild wheat harvest and success rate.',
     icon: '🔨',
     cost: { wildWheat: 25, seeds: 10, rocks: 20 },
-    unlocks: {}, // Could have passive effects in future
+    unlocks: {
+      effects: [
+        {
+          type: 'harvestBonus',
+          resource: 'wildWheat',
+          successRateBonus: 0.25,
+          extraYieldRange: [4, 7],
+        }
+      ],
+    },
   },
 
   unlockPlanting: {
@@ -53,7 +64,7 @@ export const techTree: Record<TechID, Tech> = {
     cost: { seeds: 30 },
     unlocks: {
       resources: ['primitiveWheat'],
-      actions: ['plant_primitiveWheat'],
+      actions: ['plant_primitiveWheat', 'grow_primitiveWheat', 'harvest_primitiveWheat'],
     },
   },
 
@@ -64,7 +75,7 @@ export const techTree: Record<TechID, Tech> = {
     icon: '🥙',
     cost: { seeds: 30, primitiveWheat: 50, wildWheat: 100 },
     unlocks: {
-      actions: ['feast'],
+      actions: ['feast_wildWheat'],
     },
   },
 
@@ -75,7 +86,7 @@ export const techTree: Record<TechID, Tech> = {
     icon: '🥙',
     cost: { wildWheat: 200, primitiveWheat: 100 },
     unlocks: {
-      actions: ['feast'], // You can eventually merge this with unlockFeast
+      actions: ['feast_primitiveWheat'],
     },
   },
 

@@ -1,13 +1,16 @@
 import { useGame } from '../context/GameProvider';
-import { performNamedAction } from '../context/actions/performNamedAction';
 import { resources } from '../data/resources';
 import { actionLabels } from '../data/actionData';
 
 export const ActionPanel = () => {
-  const game = useGame();
-  const { unlockedActions, performAction } = game;
+  const game = useGame(); // ✅ Hook inside component
+  const {
+    unlockedActions,
+    performNamedAction,
+    primitiveWheatPlanted,
+    readyToHarvestPrimitiveWheat,
+  } = game;
 
-  // We'll skip eating actions here
   const ignoredActions = ['eat', 'feast'];
 
   return (
@@ -25,8 +28,18 @@ export const ActionPanel = () => {
 
           if (!isUnlocked) return null;
 
+          // 🔥 Conditional skip logic for primitive wheat
+          if (resource.id === 'primitiveWheat') {
+            if (actionName === 'plant' && primitiveWheatPlanted) return null;
+            if (actionName === 'grow' && (!primitiveWheatPlanted || readyToHarvestPrimitiveWheat)) return null;
+            if (actionName === 'harvest' && !readyToHarvestPrimitiveWheat) return null;
+          }
+
           const isRockHarvest = actionName === 'harvest' && resource.id === 'rocks';
-          const label = isRockHarvest ? '🪨 Gather Rocks' : actionLabels[actionName as keyof typeof actionLabels]?.label ?? actionName;
+          const label = isRockHarvest
+            ? '🪨 Gather Rocks'
+            : actionLabels[actionName as keyof typeof actionLabels]?.label ?? actionName;
+
           const description =
             resources[resource.id]?.description ??
             actionLabels[actionName as keyof typeof actionLabels]?.description ??
@@ -34,11 +47,7 @@ export const ActionPanel = () => {
 
           return (
             <div key={actionId} style={{ marginBottom: '1rem' }}>
-              <button
-                onClick={() =>
-                  performAction(() => performNamedAction(game, resource.id, actionName), game)
-                }
-              >
+              <button onClick={() => performNamedAction(`${actionName}_${resource.id}`)}>
                 {label} ({resource.name})
               </button>
               {description && (

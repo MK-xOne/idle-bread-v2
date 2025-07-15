@@ -6,6 +6,7 @@ import type { TechID } from '../data/tech';
 import { techTree } from '../data/tech';
 import { performAction } from './actions/performAction';
 import { performNamedAction as doNamedAction } from './actions/performNamedAction';
+import { effectModifiers } from "../data/effectModifiers"; // make sure this import is present
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -20,6 +21,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const [hunger, setHunger] = useState(100);
+
+  const [modifiers, setModifiers] = useState({
+    harvestBonus: {} as Record<ResourceID, number>
+  });
 
   const [discoveredResources, setDiscoveredResources] = useState<Set<ResourceID>>(
     new Set(["wildWheat","rocks"]) // default: show Wild Wheat at start
@@ -37,24 +42,35 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [unlockedActions, setUnlockedActions] = useState<Set<string>>(
     new Set(["harvest_wildWheat", "eat_wildWheat", "harvest_rocks"])
   );
-
+  
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
   const unlockTech = (techId: TechID) => {
     const tech = techTree[techId];
     if (!tech) return;
 
-  setUnlockedTechs(prev => {
-    const updated = new Set(prev);
-    updated.add(techId);
-    console.log('unlockTech – new unlockedTechs:', Array.from(updated)); // 👉 Add this
-    return updated;
-  });
+    setUnlockedTechs(prev => {
+      const updated = new Set(prev);
+      updated.add(techId);
+      console.log('unlockTech – new unlockedTechs:', Array.from(updated));
+      return updated;
+    });
+
     if (tech.unlocks?.actions) {
       setUnlockedActions(prev => {
         const newSet = new Set(prev);
         tech.unlocks.actions!.forEach(action => newSet.add(action));
         return newSet;
       });
+    }
+
+    // 🧠 Apply modifier-based effects from tech
+    if (tech.unlocks?.effects) {
+      for (const effect of tech.unlocks.effects) {
+        effectModifiers.applyEffect(effect, {
+          ...gameState,
+          setModifiers, // needed by the effect engine
+        });
+      }
     }
   };
 
@@ -85,7 +101,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     unlockedTechs,
     unlockTech,
     unlockedActions,
-
+    modifiers,
+    setModifiers
   };
 
   return (

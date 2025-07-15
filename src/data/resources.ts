@@ -17,7 +17,7 @@ export interface Resource {
   hungerRestore?: number;
   eatCost?: number;
   maxAmount?: number;
-  harvestAmount? : number,
+  harvestAmount? : [number, number];
   discovered?: boolean;
   actions?: {
     [action: string]: (state: GameState) => void;
@@ -33,7 +33,7 @@ export const resources: Record<ResourceID, Resource> = {
   edible: false, 
   icon: '🪨',
   maxAmount: 25,
-  harvestAmount: 1,
+  harvestAmount: [1, 2],
   discovered: true,
   actions: {
     harvest: (state) => mechanics.harvest(state, 'rocks'),
@@ -48,7 +48,7 @@ export const resources: Record<ResourceID, Resource> = {
     hungerRestore: 5,
     eatCost: 10,
     maxAmount: 100,
-    harvestAmount : 3,
+    harvestAmount : [2, 4],
     discovered: true,
     actions: {
       harvest: (state) => mechanics.harvest(state, "wildWheat"),
@@ -64,12 +64,12 @@ export const resources: Record<ResourceID, Resource> = {
     hungerRestore: 10,
     eatCost: 10,
     maxAmount: 100,
-    harvestAmount: 10,
+    harvestAmount: [7, 10],
     discovered: false,
     actions: {
       harvest: (state) => mechanics.harvest(state, "primitiveWheat"),
       plant: (state) => mechanics.plant (state,"primitiveWheat"),
-      grow: (state) => mechanics.grow(state), 
+      grow: (state) => mechanics.grow(state, "primitiveWheat"), 
       eat: (state) => mechanics.eat(state, "primitiveWheat"),
       feast: (state) => mechanics.feast(state, "primitiveWheat"),
     },
@@ -82,7 +82,7 @@ export const resources: Record<ResourceID, Resource> = {
       harvest: (state) => mechanics.harvest(state, "seeds"),
     },
     maxAmount : 50,
-    harvestAmount: 2,
+    harvestAmount: [1, 2],
     onHarvestFrom: (sourceId, state) => {
       if (sourceId === 'wildWheat' && Math.random() < 0.51) {
         state.setResources(prev => ({

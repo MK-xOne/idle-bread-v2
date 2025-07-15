@@ -1,12 +1,29 @@
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
 
+
+export interface HarvestBonus {
+  successRateBonus?: number;              // e.g. +25% success rate
+  extraYieldRange?: [number, number];     // e.g. +[4, 7] extra yield
+}
+
+export interface Modifiers {
+  harvestBonus: {
+    [resourceId: string]: HarvestBonus;
+  };
+}
+
 export interface GameContextType {
   resources: Record<ResourceID, number>;
   setResources: React.Dispatch<React.SetStateAction<Record<ResourceID, number>>>;
 
   hunger: number;
   setHunger: React.Dispatch<React.SetStateAction<number>>;
+
+  modifiers: {
+   modifiers: Modifiers;
+
+  setModifiers: (modifierUpdater: (prev: Modifiers) => Modifiers) => void;
 
   performNamedAction: (id: string) => void;
 
@@ -46,4 +63,5 @@ export interface GameContextType {
   eatBread: () => void;
   feastOnWildWheat: () => void;
   feastOnPrimitiveWheat: () => void;
+},
 }
