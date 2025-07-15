@@ -40,6 +40,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   const [hunger, setHunger] = useState(100);
 
+  const [discoveredResources, setDiscoveredResources] = useState<Set<ResourceID>>(
+    new Set(["wildWheat"]) // default: show Wild Wheat at start
+  );
+
+  const discoverResource = (id: ResourceID) => {
+  setDiscoveredResources(prev => {
+    if (prev.has(id)) return prev;
+    const newSet = new Set(prev);
+    newSet.add(id);
+    return newSet;
+   });
+  };
+
   const [unlockedActions, setUnlockedActions] = useState<Set<string>>(new Set());
 
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
@@ -99,6 +112,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       value={{
         ...gameState,
         unlockedActions,
+        discoveredResources,
+        setDiscoveredResources,
+        discoverResource,
         performAction: (cb) => performAction(cb, gameState),
         harvestWildWheat: () => harvestWildWheat(gameState),
         plantPrimitiveWheat: () => plantPrimitiveWheat(gameState),

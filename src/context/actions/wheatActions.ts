@@ -1,29 +1,40 @@
 import type { GameState } from '../types';
 import { performAction } from './performAction';
+import { resources } from "../../data/resources";
 
-  export const harvestWildWheat = (state: GameState) => {
-    performAction(() => {
-      const hasStoneTools = state.unlockedTechs.has('stoneTools');
 
-      const baseChance = 0.51;
-      const bonusChance = hasStoneTools ? 0.25 : 0;
-      const successChance = baseChance + bonusChance;
+export const harvestWildWheat = (state: GameState) => {
+  performAction(() => {
+    const hasStoneTools = state.unlockedTechs.has("stoneTools");
 
-      const roll = Math.random();
+    const baseChance = 0.51;
+    const bonusChance = hasStoneTools ? 0.25 : 0;
+    const successChance = baseChance + bonusChance;
 
-      if (roll <= successChance) {
-        const baseAmount = Math.floor(Math.random() * 3) + 1; // 1–3
-        const bonusAmount = hasStoneTools ? 2 : 0;
-        const total = baseAmount + bonusAmount;
+    const roll = Math.random();
 
-        state.setResources(prev => ({
+    if (roll <= successChance) {
+      const baseAmount = Math.floor(Math.random() * 3) + 1; // 1–3
+      const bonusAmount = hasStoneTools ? 2 : 0;
+      const total = baseAmount + bonusAmount;
+
+      state.discoverResource("wildWheat");
+      state.discoverResource("seeds");
+
+      state.setResources(prev => {
+        const current = prev.wildWheat;
+        const max = resourceMeta.wildWheat?.maxAmount ?? Infinity;
+        const newAmount = Math.min(current + total, max);
+
+        return {
           ...prev,
-          wildWheat: prev.wildWheat + total,
+          wildWheat: newAmount,
           seeds: prev.seeds + (Math.random() < 0.4 ? 1 : 0),
-        }));
-      }
-    }, state);
-  };
+        };
+      });
+    }
+  }, state);
+};
 
 
 
@@ -55,19 +66,30 @@ export const plantPrimitiveWheat = (state: GameState) => {
   }
 };
 
-export const harvestPrimitiveWheat = (state: GameState) => {
-  if (state.readyToHarvestPrimitiveWheat) {
-    performAction(() => {
-      state.setResources(prev => ({
-        ...prev,
-        primitiveWheat: prev.primitiveWheat + 10,
-      }));
-      state.setPrimitiveWheatPlanted(false);
-      state.setReadyToHarvestPrimitiveWheat(false);
-      state.setActionsSincePlanting(0);
-    }, state);
-  }
-};
+  export const harvestPrimitiveWheat = (state: GameState) => {
+    if (state.readyToHarvestPrimitiveWheat) {
+      performAction(() => {
+       
+        state.discoverResource("primitiveWheat");
+        state.setResources(prev => {
+        state.setResources(prev => {
+          const current = prev.primitiveWheat;
+          const max = resources.primitiveWheat.maxAmount ?? Infinity;
+          const harvested = 10;
+          const newAmount = Math.min(current + harvested, max);
+
+          return {
+            ...prev,
+            primitiveWheat: newAmount,
+          };
+        });
+
+        state.setPrimitiveWheatPlanted(false);
+        state.setReadyToHarvestPrimitiveWheat(false);
+        state.setActionsSincePlanting(0);
+      }, state);
+    })
+  }};
 
 export const eatWildWheat = (state: GameState) => {
   const { resources, hunger } = state;

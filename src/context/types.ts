@@ -8,6 +8,10 @@ export interface GameContextType {
   hunger: number;
   setHunger: React.Dispatch<React.SetStateAction<number>>;
 
+  discoveredResources: Set<ResourceID>;
+  setDiscoveredResources: React.Dispatch<React.SetStateAction<Set<ResourceID>>>;
+  discoverResource: (id: ResourceID) => void;
+
   unlockedTechs: Set<TechID>;
   unlockTech: (techId: TechID) => void;
   

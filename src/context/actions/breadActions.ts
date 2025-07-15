@@ -1,60 +1,69 @@
 import type { GameState } from '../types';
 import { performAction } from './performAction';
+import { resources } from "../../data/resources";
+
 
 export const grindFlour = (state: GameState) => {
-  const { resources, grindClicks } = state;
+  const { resources: res, grindClicks } = state;
 
-  if (resources.primitiveWheat < 1 && grindClicks === 0) return;
+  if (res.primitiveWheat < 1 && grindClicks === 0) return;
 
   performAction(() => {
-    if (resources.primitiveWheat >= 1) {
+    if (res.primitiveWheat >= 1) {
       state.setResources(prev => ({
         ...prev,
         primitiveWheat: prev.primitiveWheat - 1,
       }));
-
-      state.setGrindClicks(prev => {
-        const next = prev + 1;
-        if (next >= 5) {
-          state.setGrindClicks(0);
-          state.setResources(prev => ({
-            ...prev,
-            flour: prev.flour + 1,
-          }));
-        }
-        return next;
-      });
     }
+
+    state.setGrindClicks(prev => {
+      const next = prev + 1;
+
+      if (next >= 5) {
+        const currentFlour = state.resources.flour;
+        const max = resources.flour?.maxAmount ?? Infinity;
+        const newAmount = Math.min(currentFlour + 1, max);
+
+        state.discoverResource("flour");
+
+        state.setResources(prev => ({
+          ...prev,
+          flour: newAmount,
+        }));
+
+        return 0;
+      }
+
+      return next;
+    });
   }, state);
 };
 
 
 export const bakeBread = (state: GameState) => {
-  const {
-    fireDiscovered,
-    resources,
-    setResources,
-    bakeClicks,
-    setBakeClicks,
-  } = state;
-
-  if (!fireDiscovered) return;
-
   performAction(() => {
-    const requiredClicks = 3;
-    const requiredFlour = 3;
+    const breadReady = state.bakeClicks + 1 >= 3;
+    const enoughFlour = state.resources.flour >= 3;
 
-    if (bakeClicks + 1 >= requiredClicks && resources.flour >= requiredFlour) {
-      setResources(prev => ({
+    if (!enoughFlour && !breadReady) return;
+
+    if (breadReady) {
+      const current = state.resources.bread;
+      const max = resources.bread?.maxAmount ?? Infinity;
+      const newAmount = Math.min(current + 1, max);
+
+      state.discoverResource("bread");
+
+      state.setResources(prev => ({
         ...prev,
-        flour: prev.flour - requiredFlour,
-        bread: prev.bread + 1,
+        bread: newAmount,
+        flour: prev.flour - 3,
       }));
-      setBakeClicks(0);
+      state.setBakeClicks(0);
     } else {
-      setBakeClicks(prev => prev + 1);
+      state.setBakeClicks(prev => prev + 1);
     }
-  }, state);
+  }, state); // ✅ This closes performAction correctly
 };
 
 export const eatBread = (state: GameState) => {

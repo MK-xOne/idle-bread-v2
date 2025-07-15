@@ -1,4 +1,6 @@
 import { useGame } from '../context/GameProvider';
+import { resources as resourceMeta } from "../data/resources";
+
 
 export const ActionPanel = () => {
   const {
@@ -23,7 +25,12 @@ export const ActionPanel = () => {
       <h3>⚙️ Actions</h3>
 
       <div style={{ marginBottom: '1rem' }}>
-        <button onClick={harvestWildWheat}>Harvest Wild Wheat</button>
+      <button
+        onClick={harvestWildWheat}
+        disabled={resources.wildWheat >= (resourceMeta.wildWheat?.maxAmount ?? Infinity)}
+      >
+        Harvest Wild Wheat
+      </button>
       </div>
 
       {unlockedActions.has('plantPrimitiveWheat') && (
@@ -36,7 +43,10 @@ export const ActionPanel = () => {
               🌾 Plant Primitive Wheat (5 seeds)
             </button>
           ) : readyToHarvestPrimitiveWheat ? (
-            <button onClick={harvestPrimitiveWheat}>
+            <button
+              onClick={harvestPrimitiveWheat}
+              disabled={resources.primitiveWheat >= (resourceMeta.primitiveWheat?.maxAmount ?? Infinity)}
+            >
               Harvest Primitive Wheat
             </button>
           ) : (
@@ -47,23 +57,29 @@ export const ActionPanel = () => {
 
       {unlockedActions.has('grindFlour') && unlockedTechs.has('unlockWheel') && (
         <div style={{ marginBottom: '1rem' }}>
-          <button
-            onClick={grindFlour}
-            disabled={resources.primitiveWheat < 5 && grindClicks === 0}
-          >
-            Grind Wheat ({grindClicks}/5)
-          </button>
+        <button
+          onClick={grindFlour}
+          disabled={
+            (resources.primitiveWheat < 5 && grindClicks === 0) ||
+            resources.flour >= (resourceMeta.flour?.maxAmount ?? Infinity)
+          }
+        >
+          Grind Wheat ({grindClicks}/5)
+        </button>
         </div>
       )}
 
       {unlockedTechs.has('discoverFire') && unlockedTechs.has('baking') && (
         <div>
-          <button
-            onClick={bakeBread}
-            disabled={resources.flour < 3 && bakeClicks === 0}
-          >
-            Bake Bread ({bakeClicks}/3)
-          </button>
+        <button
+          onClick={bakeBread}
+          disabled={
+            (resources.flour < 3 && bakeClicks === 0) ||
+            resources.bread >= (resourceMeta.bread?.maxAmount ?? Infinity)
+          }
+        >
+          Bake Bread ({bakeClicks}/3)
+        </button>
         </div>
       )}
     </section>

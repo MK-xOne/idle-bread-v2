@@ -7,6 +7,7 @@ export interface Resource {
   edible?: boolean;
   hungerRestore?: number;
   eatCost?: number;
+  maxAmount?: number;
   discovered?: boolean; // Hidden until triggered
 }
 
@@ -18,6 +19,7 @@ export const resources: Record<ResourceID, Resource> = {
     edible: true,
     hungerRestore: 5,
     eatCost: 10,
+    maxAmount: 100,
     discovered: true,
   },
   primitiveWheat: {
@@ -27,18 +29,21 @@ export const resources: Record<ResourceID, Resource> = {
     edible: true,
     hungerRestore: 10,
     eatCost: 10,
+    maxAmount: 100,
     discovered: false,
   },
   seeds: {
     id: 'seeds',
     name: 'Seeds',
     description: 'Used to plant primitive wheat.',
+    maxAmount: 50,
     discovered: true,
   },
   flour: {
     id: 'flour',
     name: 'Flour',
     description: 'Ground primitive wheat. Used to make bread.',
+    maxAmount: 25,
     discovered: false,
   },
   bread: {
@@ -48,6 +53,7 @@ export const resources: Record<ResourceID, Resource> = {
     edible: true,
     hungerRestore: 30,
     eatCost: 1,
+    maxAmount: 25,
     discovered: false,
   },
 };
