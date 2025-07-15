@@ -2,6 +2,7 @@ import type { GameState } from "../context/types";
 import type { ResourceID } from "./resources";
 import { resources } from '../data/resources';
 
+
 // ---- Action Types ----
 
 export type ActionType =
@@ -10,7 +11,8 @@ export type ActionType =
   | "feast"
   | "plant"
   | "grind"
-  | "bake";
+  | "bake"
+  | "grow";
 
 export type MechanicFunction = (state: GameState, resourceId?: ResourceID) => boolean;
 
@@ -133,6 +135,28 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
 
     return false;
   },
+
+  grow: (state) => {
+    const {
+      primitiveWheatPlanted,
+      readyToHarvestPrimitiveWheat,
+      setActionsSincePlanting,
+      setReadyToHarvestPrimitiveWheat,
+    } = state;
+
+    if (primitiveWheatPlanted && !readyToHarvestPrimitiveWheat) {
+      setActionsSincePlanting(prev => {
+        const next = prev + 1;
+        if (next >= 20) {
+          setReadyToHarvestPrimitiveWheat(true);
+        }
+        return next;
+      });
+    }
+
+    return true;
+  },
+
 
   grind: (state) => {
     if (state.resources.primitiveWheat >= 1) {

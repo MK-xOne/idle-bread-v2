@@ -25,8 +25,12 @@ export const ActionPanel = () => {
 
           if (!isUnlocked) return null;
 
-          const label = actionLabels[actionName as keyof typeof actionLabels]?.label ?? actionName;
-          const description = actionLabels[actionName as keyof typeof actionLabels]?.description ?? '';
+          const isRockHarvest = actionName === 'harvest' && resource.id === 'rocks';
+          const label = isRockHarvest ? '🪨 Gather Rocks' : actionLabels[actionName as keyof typeof actionLabels]?.label ?? actionName;
+          const description =
+            resources[resource.id]?.description ??
+            actionLabels[actionName as keyof typeof actionLabels]?.description ??
+            '';
 
           return (
             <div key={actionId} style={{ marginBottom: '1rem' }}>

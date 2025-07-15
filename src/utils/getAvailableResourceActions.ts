@@ -1,6 +1,5 @@
 import { resources } from "../data/resources";
 import type { ActionType, ResourceID } from "../data/resources";
-import { useGame } from "../context/GameProvider";
 
 // Define which action types belong in which panel
 export const generalActionTypes: ActionType[] = ['harvest', 'plant', 'grind', 'bake'];
@@ -11,6 +10,10 @@ export interface ResourceActionEntry {
   actionType: ActionType;
   label: string;
 }
+
+export const customActionLabels: Record<string, string> = {
+  harvest_rock: "⛏️ Gather Rocks"
+};
 
 export const getAvailableResourceActions = (
   allowedTypes: ActionType[],

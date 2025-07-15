@@ -30,7 +30,7 @@ export const techTree: Record<TechID, Tech> = {
     name: 'Discover Fire',
     description: 'Control the flame to change everything.',
     icon: '🔥',
-    cost: { wildWheat: 20 },
+    cost: { wildWheat: 20, rocks: 15 },
     unlocks: {
       techs: ['stoneTools', 'unlockPlanting', 'primitiveFeast'],
     },
@@ -41,7 +41,7 @@ export const techTree: Record<TechID, Tech> = {
     name: 'Stone Tools',
     description: 'Increase wild wheat harvest and success rate.',
     icon: '🔨',
-    cost: { wildWheat: 25, seeds: 10 },
+    cost: { wildWheat: 25, seeds: 10, rocks: 20 },
     unlocks: {}, // Could have passive effects in future
   },
 

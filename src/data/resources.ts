@@ -2,6 +2,7 @@ import type { GameState } from "../context/types";
 import { mechanics } from "./actionData";
 
 export type ResourceID =
+  | "rocks"
   | "wildWheat"
   | "primitiveWheat"
   | "seeds"
@@ -24,6 +25,21 @@ export interface Resource {
 }
 
 export const resources: Record<ResourceID, Resource> = {
+  
+  rocks: {
+  id: 'rocks',
+  name: 'Rocks',
+  description: 'A hard, unyielding material useful for tools and construction.',
+  edible: false, 
+  icon: '🪨',
+  maxAmount: 25,
+  harvestAmount: 1,
+  discovered: true,
+  actions: {
+    harvest: (state) => mechanics.harvest(state, 'rocks'),
+    }
+  },
+  
   wildWheat: {
     id: "wildWheat",
     name: "Wild Wheat",
@@ -52,15 +68,19 @@ export const resources: Record<ResourceID, Resource> = {
     discovered: false,
     actions: {
       harvest: (state) => mechanics.harvest(state, "primitiveWheat"),
+      plant: (state) => mechanics.plant (state,"primitiveWheat"),
+      grow: (state) => mechanics.grow(state), 
       eat: (state) => mechanics.eat(state, "primitiveWheat"),
       feast: (state) => mechanics.feast(state, "primitiveWheat"),
     },
   },
   seeds: {
     id: 'seeds',
-    label: '🌰 Seeds',
+    name: '🌰 Seeds',
     description: 'Useful for planting new crops.',
-    actions: {}, // Seeds might not have direct actions
+    actions: {
+      harvest: (state) => mechanics.harvest(state, "seeds"),
+    },
     maxAmount : 50,
     harvestAmount: 2,
     onHarvestFrom: (sourceId, state) => {

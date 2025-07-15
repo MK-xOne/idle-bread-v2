@@ -16,12 +16,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     seeds: 0,
     flour: 0,
     bread: 0,
+    rocks: 0,
   });
 
   const [hunger, setHunger] = useState(100);
 
   const [discoveredResources, setDiscoveredResources] = useState<Set<ResourceID>>(
-    new Set(["wildWheat"]) // default: show Wild Wheat at start
+    new Set(["wildWheat","rocks"]) // default: show Wild Wheat at start
   );
 
   const discoverResource = (id: ResourceID) => {
@@ -34,16 +35,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const [unlockedActions, setUnlockedActions] = useState<Set<string>>(
-    new Set(["harvest_wildWheat", "eat_wildWheat"])
+    new Set(["harvest_wildWheat", "eat_wildWheat", "harvest_rocks"])
   );
 
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
   const unlockTech = (techId: TechID) => {
     const tech = techTree[techId];
     if (!tech) return;
-
-    console.log('[unlocking tech]', techId); // ← Add this
-
 
   setUnlockedTechs(prev => {
     const updated = new Set(prev);

@@ -7,10 +7,7 @@ const formatLabel = (id: string) =>
     .replace(/^./, str => str.toUpperCase());
 
 export const InventoryDisplay = () => {
-  const { resources, discoveredResources } = useGame();
-
-console.log("🔥 Discovered:", Array.from(discoveredResources));
-console.log("🌾 Wild Wheat:", resources.wildWheat);
+  const { resources, discoveredResources } = useGame();;
 
   return (
     <section style={{ marginBottom: '1.5rem' }}>
