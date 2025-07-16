@@ -1,5 +1,7 @@
 import type { GameState } from "../context/types";
 import { mechanics } from "./actionData";
+import { onHarvestFromWildWheat } from "./actionData";
+
 
 const getRandomInRange = ([min, max]: [number, number]) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
@@ -25,7 +27,6 @@ export interface Resource {
   actions?: {
     [action: string]: (state: GameState) => void;
   };
-  onHarvestFrom?: (sourceId: ResourceID, state: GameState) => void;
 }
 
 export const resources: Record<ResourceID, Resource> = {
@@ -60,6 +61,7 @@ export const resources: Record<ResourceID, Resource> = {
       feast: (state) => mechanics.feast(state, "wildWheat"),
     },
   },
+
   primitiveWheat: {
     id: "primitiveWheat",
     name: "Primitive Wheat",
@@ -78,40 +80,18 @@ export const resources: Record<ResourceID, Resource> = {
       feast: (state) => mechanics.feast(state, "primitiveWheat"),
     },
   },
+
   seeds: {
     id: 'seeds',
     name: '🌰 Seeds',
     description: 'Useful for planting new crops.',
     actions: {
-      harvest: (state) => mechanics.harvest(state, "seeds"),
+      harvest: onHarvestFromWildWheat,    
     },
     maxAmount : 50,
     harvestAmount: [1, 2],
-    onHarvestFrom: (sourceId, state) => {
-    resourceData.wildWheat.onHarvestFrom = (sourceId, state) => {
-      const resource = resourceData.wildWheat;
-      const current = state.resources.wildWheat;
-      const max = resource.maxAmount;
-      const amount = getRandomInRange(resource.harvestAmount ?? [1, 1]);
-
-      if (current >= max) return;
-
-      state.setResources(prev => ({
-        ...prev,
-        wildWheat: Math.min(prev.wildWheat + amount, max),
-      }));
-
-      if (Math.random() < 0.51) {
-        state.setResources(prev => ({
-          ...prev,
-          seeds: prev.seeds + 1,
-        }));
-      }
-};
-
-    }
-
   },
+
   flour: {
     id: "flour",
     name: "Flour",
@@ -122,6 +102,7 @@ export const resources: Record<ResourceID, Resource> = {
       grind: (state) => mechanics.grind(state),
     },
   },
+
   bread: {
     id: "bread",
     name: "Bread",

@@ -250,3 +250,28 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     return true;
   },
 };
+
+export function onHarvestFromWildWheat(state: GameState): void {
+  const resource = resources["wildWheat"];
+  const current = state.resources.wildWheat;
+  const max = resource.maxAmount;
+  const [min, maxYield] = resource.harvestAmount ?? [1, 1];
+  const amount = Math.floor(Math.random() * (maxYield - min + 1)) + min;
+
+  if (current >= max) return;
+
+  state.setResources(prev => ({
+    ...prev,
+    wildWheat: Math.min(prev.wildWheat + amount, max),
+  }));
+
+  if (Math.random() < 0.51) {
+    state.setResources(prev => ({
+      ...prev,
+      seeds: prev.seeds + 1,
+    }));
+  }
+
+  trackInteraction(state.setResourceInteractions, "wildWheat", "harvested");
+}
+

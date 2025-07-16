@@ -18,11 +18,12 @@ export interface Tech {
   icon: string;
   cost: Partial<Record<ResourceID, number>>;
   unlockedByDefault?: boolean;
+  requires?: TechID[];
   unlocks: {
     resources?: ResourceID[];
     actions?: string[];
     techs?: TechID[];
-    effects?:effectModifiers[];
+    effects?:any[];
   };
 }
 
@@ -33,8 +34,9 @@ export const techTree: Record<TechID, Tech> = {
     description: 'Control the flame to change everything.',
     icon: '🔥',
     cost: { wildWheat: 20, rocks: 15 },
+    requires: [],
     unlocks: {
-      techs: ['stoneTools', 'unlockPlanting', 'primitiveFeast'],
+      techs: ['stoneTools', 'unlockPlanting', 'primitiveFeast'],  
     },
   },
 
@@ -44,6 +46,7 @@ export const techTree: Record<TechID, Tech> = {
     description: 'Increase wild wheat harvest and success rate.',
     icon: '🔨',
     cost: { wildWheat: 25, seeds: 10, rocks: 20 },
+    requires: ["discoverFire"],
     unlocks: {
       effects: [
         {
@@ -54,6 +57,7 @@ export const techTree: Record<TechID, Tech> = {
         }
       ],
     },
+    
   },
 
   unlockPlanting: {
@@ -62,6 +66,7 @@ export const techTree: Record<TechID, Tech> = {
     description: 'From gatherer to grower.',
     icon: '🌱',
     cost: { seeds: 30 },
+    requires: ["stoneTools"],
     unlocks: {
       resources: ['primitiveWheat'],
       actions: ['plant_primitiveWheat', 'grow_primitiveWheat', 'harvest_primitiveWheat'],
@@ -126,3 +131,9 @@ export const techTree: Record<TechID, Tech> = {
     },
   },
 };
+
+export function isTechDiscoverable(tech: Tech, unlockedTechs: Set<TechID>): boolean {
+  if (unlockedTechs.has(tech.id)) return false; // already unlocked
+  if (!tech.requires || tech.requires.length === 0) return true; // no requirements
+  return tech.requires.every(req => unlockedTechs.has(req)); // check all prerequisites
+}

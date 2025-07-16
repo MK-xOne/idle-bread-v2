@@ -1,5 +1,5 @@
 import { useGame } from '../context/GameProvider';
-import { techTree } from '../data/tech';
+import { techTree, isTechDiscoverable } from '../data/tech';
 
 export const TechnologyPanel = () => {
   const {
@@ -39,7 +39,9 @@ export const TechnologyPanel = () => {
 
       {Object.values(techTree).map((tech) => {
         const isUnlocked = unlockedTechs.has(tech.id);
-        if (isUnlocked) return null;
+        const isDiscoverable = isTechDiscoverable(tech, unlockedTechs);
+
+        if (isUnlocked || !isDiscoverable) return null;
 
         return (
           <div key={tech.id} style={{ display: 'flex', justifyContent: 'center' }}>
