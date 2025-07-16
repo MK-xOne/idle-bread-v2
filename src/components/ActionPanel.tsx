@@ -14,7 +14,7 @@ export const ActionPanel = () => {
   const ignoredActions = ['eat', 'feast'];
 
   return (
-    <section style={{ marginTop: '2rem' }}>
+    <div className="panel">
       <h3>⚙️ Actions</h3>
 
       {Object.values(resources).map(resource => {
@@ -49,14 +49,14 @@ export const ActionPanel = () => {
             <div key={actionId} style={{ marginBottom: '1rem' }}>
               <button onClick={() => performNamedAction(`${actionName}_${resource.id}`)}>
                 {label} ({resource.name})
-              </button>
               {description && (
-                <p style={{ fontSize: '0.9rem', color: '#888' }}>{description}</p>
+                <p style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>{description}</p>
               )}
+              </button>
             </div>
           );
         });
       })}
-    </section>
+  </div>
   );
 };

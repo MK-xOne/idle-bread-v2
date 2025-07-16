@@ -7,7 +7,8 @@ export function HungerBar() {
   const barColor = hunger > 25 ? '#8bc34a' : '#e53935';
 
   return (
-    <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+    <div className="panel">
+    <div style={{ textAlign: 'center' }}>
       <label>🍽 Hunger</label>
       <div
         style={{
@@ -28,6 +29,7 @@ export function HungerBar() {
           }}
         />
       </div>
+    </div>
     </div>
   );
 }

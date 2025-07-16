@@ -41,13 +41,42 @@
   color: #888;
 }
 
-.grid-layout {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 1.5rem;
-  justify-items: stretch;
-  align-items: start;
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.discovery-bar {
+  width: 100%;
+  padding: 0rem 0rem 0rem 0rem;
+  background-color: #2c2c2c;
+  border-bottom: 1px solid #444;
+  margin: .5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 1.5rem; /* icon size */
+}
+
+.tech-icon {
+  display: inline-block;
+  cursor: default;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem; /* space between columns */
+  align-items: flex-start; /* so tall columns don't stretch shorter ones */
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* space between stacked panels in column */
 }
 
 .panel {
@@ -55,5 +84,70 @@
   border: 1px solid #444;
   padding: 1rem;
   border-radius: 0.5rem;
+}
+
+.discovery-bar-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+}
+
+.data-toggle-button {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1001;
+  padding: 0.5rem 1rem;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.data-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: #1e1e1e;
+  border-left: 1px solid #444;
+  padding: 1rem;
+  z-index: 1000;
+  overflow-y: auto;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
+  text-align: left;
+}
+
+.data-panel h2 {
+  margin-bottom: 1rem;
+  text-align: left; /* ⬅️ Make sure header aligns too */
+}
+
+.data-panel ul {
+  padding-left: 1.2rem; /* ⬅️ Indent bullet list */
+  list-style-type: disc;
+}
+
+.data-panel ul ul {
+  list-style-type: circle;
+  margin-left: 1rem;
+}
+
+.close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #fff;
+  cursor: pointer;
 }
 

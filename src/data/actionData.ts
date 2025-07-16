@@ -2,6 +2,8 @@ import type { GameState } from "../context/types";
 import type { ResourceID } from "./resources";
 import { resources } from '../data/resources';
 import { effectModifiers } from './effectModifiers';
+import { trackInteraction } from './tracking';
+
 
 // ---- Action Types ----
 
@@ -12,8 +14,8 @@ export type ActionType =
   | "plant"
   | "grind"
   | "bake"
-  | "grow";
-
+  | "grow"
+  
 export type MechanicFunction = (state: GameState, resourceId?: ResourceID) => boolean;
 
 // ---- UI Labels ----
@@ -76,13 +78,17 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const current = state.resources[resourceId];
     const max = def?.maxAmount ?? Infinity;
     const newAmount = Math.min(current + totalAmount, max);
+    const harvested = newAmount - current;
 
     state.setResources(prev => ({
       ...prev,
       [resourceId]: newAmount,
     }));
 
+    trackInteraction(state.setResourceInteractions, resourceId, 'harvest');
+
     state.discoverResource(resourceId);
+
 
     // 🔁 Passive effects
     Object.values(resources).forEach(res => {
@@ -113,6 +119,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
         ...prev,
         [resourceId]: prev[resourceId] - cost,
       }));
+      trackInteraction(state.setResourceInteractions, resourceId, 'eat');
       state.setHunger(prev => Math.min(100, prev + restore));
       return true;
     }
@@ -137,6 +144,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
         ...prev,
         [resourceId]: prev[resourceId] - totalCost,
       }));
+      trackInteraction(state.setResourceInteractions, resourceId, 'feast');
       state.setHunger(100);
       return true;
     }
@@ -154,6 +162,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
         ...prev,
         seeds: prev.seeds - 5,
       }));
+      trackInteraction(state.setResourceInteractions, resourceId, 'plant');
       state.setPrimitiveWheatPlanted(true);
       console.log('[PLANT] primitive wheat planted!');
       state.setActionsSincePlanting(0);
@@ -181,6 +190,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           state.discoverResource('primitiveWheat'); 
 
         }
+        trackInteraction(state.setResourceInteractions, resourceId, 'grow');
         return next;
         console.log('[GROW] growing tick triggered');
       });
@@ -206,6 +216,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           ...prev,
           flour: prev.flour + 1,
         }));
+        trackInteraction(state.setResourceInteractions, resourceId, 'grind');
         state.discoverResource("flour");
       }
       return next;
@@ -230,6 +241,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           ...prev,
           bread: prev.bread + 1,
         }));
+        trackInteraction(state.setResourceInteractions, resourceId, 'bake');
         state.discoverResource("bread");
       }
       return next;

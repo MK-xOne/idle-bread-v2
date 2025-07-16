@@ -34,28 +34,45 @@ export const TechnologyPanel = () => {
 
 
   return (
-    <section style={{ marginTop: '2rem' }}>
+      <div className="panel">
       <h3>🧠 Technologies</h3>
 
-    {Object.values(techTree).map((tech) => {
-      const isUnlocked = unlockedTechs.has(tech.id);
-      if (isUnlocked) return null; // ⬅️ hide unlocked techs
+      {Object.values(techTree).map((tech) => {
+        const isUnlocked = unlockedTechs.has(tech.id);
+        if (isUnlocked) return null;
 
-      return (
-        <button
-          key={tech.id}
-          onClick={() => handleUnlock(tech.id)}
-          disabled={!canAfford(tech.cost) || hunger <= 0}
-          style={{ display: 'block', marginBottom: '0.5rem' }}
-        >
-          {tech.icon} {tech.name}{' '}
-          ({Object.entries(tech.cost)
-            .map(([k, v]) => `${v} ${k}`)
-            .join(' + ')})
-        </button>
-      );
-    })}
+        return (
+          <div key={tech.id} style={{ display: 'flex', justifyContent: 'center' }}>
+            <button
+              onClick={() => handleUnlock(tech.id)}
+              disabled={!canAfford(tech.cost) || hunger <= 0}
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                textAlign: 'center',
+                width: '100%',
+              }}
+            >
+              <div>
+                {tech.icon} {tech.name}{' '}
+              </div>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontStyle: 'italic',
+                  color: '#888',
+                }}
+              >
+                ({Object.entries(tech.cost)
+                  .map(([k, v]) => `${v} ${k}`)
+                  .join(' + ')})
+              </span>
+            </button>
+          </div>
+        );
+      })}
 
-    </section>
+
+    </div>
   );
 };

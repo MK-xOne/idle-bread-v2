@@ -7,7 +7,7 @@ export const EatingPanel = () => {
   const actions = getAvailableResourceActions(eatingActionTypes, unlockedActions);
 
   return (
-    <section style={{ marginTop: '2rem' }}>
+      <div className="panel">
       <h3>🍽️ Eating</h3>
       {actions.map(({ resourceId, actionType, label }) => (
         <div key={`${actionType}_${resourceId}`} style={{ marginBottom: '1rem' }}>
@@ -16,6 +16,6 @@ export const EatingPanel = () => {
           </button>
         </div>
       ))}
-    </section>
+    </div>
   );
 };

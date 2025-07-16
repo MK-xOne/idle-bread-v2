@@ -10,7 +10,7 @@ export const InventoryDisplay = () => {
   const { resources, discoveredResources } = useGame();;
 
   return (
-    <section style={{ marginBottom: '1.5rem' }}>
+    <div className="panel">
       <h3>📦 Inventory</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem' }}>
         {(Object.entries(resources) as [ResourceID, number][])
@@ -31,6 +31,6 @@ export const InventoryDisplay = () => {
             );
           })}
       </div>
-    </section>
+    </div>
   );
 };
