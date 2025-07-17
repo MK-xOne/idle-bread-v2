@@ -5,10 +5,11 @@ import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
 import { techTree } from '../data/tech';
 import { performAction } from './actions/performAction';
-import { performNamedAction as doNamedAction } from './actions/performNamedAction';
+import { performNamedAction as doNamedAction, performNamedAction } from './actions/performNamedAction';
 import { effectModifiers } from '../data/effectModifiers';
 import type { Modifiers } from './types';
 import type { InteractionTracker } from './types';
+import type { ActionType } from '../data/actionData';
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [resources, setResources] = useState<Record<ResourceID, number>>({
@@ -119,26 +120,30 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         ...gameState,
         unlockTech,
         performAction: (cb) => {
-          trackingLogic.incrementClick(setClickCount);  // 👈 Add this
           performAction(cb, gameState);                 // your existing logic
         },        
-          performNamedAction: (id: string) => {
+          
+        performNamedAction: (id: string) => {
           const [actionType, resourceId] = id.split('_');
-            const resId = resourceId as ResourceID;
+          const resId = resourceId as ResourceID;
 
           performAction(
             () => {
-              const success = doNamedAction(gameState, resourceId as ResourceID, resId, actionType);
-              if (success && actionType === "harvest") {
-                Object.values(resources).forEach(resource => {
-                 if (r.onHarvestFrom) r.onHarvestFrom(resId, gameState);
-                });
+              console.log(`[performNamedAction] Triggering action`, { actionType, resId });
+
+              const success = doNamedAction(gameState, resId, actionType);
+
+              // ✅ Specific hardcoded chain: harvesting wildWheat triggers harvesting seeds
+              if (success && actionType === "harvest" && resId === "wildWheat") {
+                console.log(`[performNamedAction] Chaining: wildWheat → seeds`);
+                doNamedAction(gameState, "seeds", "harvest");
               }
             },
             gameState,
             { allowWhenStarving: actionType === 'eat' || actionType === 'feast' }
           );
         },
+
         // Stubbed action methods — implement as needed
         harvestWildWheat: () => {},
         plantPrimitiveWheat: () => {},

@@ -47,11 +47,17 @@ export const ActionPanel = () => {
 
           return (
             <div key={actionId} style={{ marginBottom: '1rem' }}>
-              <button onClick={() => performNamedAction(`${actionName}_${resource.id}`)}>
+              <button
+                onClick={() => {
+                  const id = `${actionName}_${resource.id}`;
+                  console.log(`[UI] Button clicked:`, id);
+                  performNamedAction(id);
+                }}
+              >
                 {label} ({resource.name})
-              {description && (
-                <p style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>{description}</p>
-              )}
+                {description && (
+                  <p style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>{description}</p>
+                )}
               </button>
             </div>
           );

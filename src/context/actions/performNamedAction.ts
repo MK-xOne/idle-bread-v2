@@ -13,6 +13,8 @@ export const performNamedAction = (
 ): boolean => {
   const resource = resources[resourceId];
 
+  console.log(`[performNamedAction] called with:`, { resourceId, action });
+
   if (!resource?.actions || typeof resource.actions[action] !== 'function') {
     console.warn(`[performNamedAction] Action '${action}' not found for resource '${resourceId}'`);
     return false;
@@ -21,6 +23,7 @@ export const performNamedAction = (
   const result = (resource.actions[action] as (state: GameState) => boolean)(state);
 
   if (resourceId === 'wildWheat' && action === 'harvest') {
+    console.log(`Triggering secondary harvest for seeds.`);
     performNamedAction(state, 'seeds', 'harvest');
   }
 

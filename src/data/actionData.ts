@@ -89,7 +89,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
       state.setReadyToHarvestPrimitiveWheat(false);
       state.setActionsSincePlanting(0);
     }
-
+    console.log("Harvesting", resourceId, "Current:", current, "Add:", totalAmount, "New:", newAmount);
     return true;
   },
 
