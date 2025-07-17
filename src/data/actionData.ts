@@ -63,7 +63,8 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const successRateBonus = bonus.successRateBonus ?? 0;
     const extraRange = bonus.extraYieldRange ?? [0, 0];
 
-    const successChance = 0.75 + successRateBonus;
+    const baseRate = def?.harvestSuccessRate ?? 0.75;
+    const successChance = baseRate + successRateBonus;
     const isSuccess = Math.random() <= successChance;
     if (!isSuccess) return false;
 

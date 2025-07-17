@@ -70,7 +70,7 @@ export const techTree: Record<TechID, Tech> = {
   unlocks: {
     effects: [
       {
-        type: 'maxAmountBonus',
+        type: 'maxInventoryBonus',
         resource: 'all',
         amount: 100,
       },

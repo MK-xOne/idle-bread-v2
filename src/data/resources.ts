@@ -15,17 +15,18 @@ export type ResourceID =
 export interface Resource {
   id: ResourceID;
   name: string;
+  icon?: string;
   description?: string;
   edible?: boolean;
   hungerRestore?: number;
   eatCost?: number;
   maxAmount?: number;
   harvestAmount? : [number, number];
+  harvestSuccessRate?: number;
   discovered?: boolean;
   actions?: {
     [action: string]: (state: GameState) => void;
   };
-  onHarvestFrom?: (sourceID: ResourceID, state: GameState) => void;
 }
 
 export const resources: Record<ResourceID, Resource> = {
@@ -38,6 +39,7 @@ export const resources: Record<ResourceID, Resource> = {
   icon: '🪨',
   maxAmount: 25,
   harvestAmount: [1, 2],
+  harvestSuccessRate : .51,
   discovered: true,
   actions: {
     harvest: (state) => mechanics.harvest(state, 'rocks'),
@@ -53,6 +55,7 @@ export const resources: Record<ResourceID, Resource> = {
     eatCost: 10,
     maxAmount: 100,
     harvestAmount : [2, 4],
+    harvestSuccessRate : .51,
     discovered: true,
     actions: {
       harvest: (state) => mechanics.harvest(state, "wildWheat"),
@@ -70,6 +73,7 @@ export const resources: Record<ResourceID, Resource> = {
     eatCost: 10,
     maxAmount: 100,
     harvestAmount: [7, 10],
+    harvestSuccessRate: .61,
     discovered: false,
     actions: {
       harvest: (state) => mechanics.harvest(state, "primitiveWheat"),
@@ -88,6 +92,7 @@ export const resources: Record<ResourceID, Resource> = {
     edible: false,
     maxAmount : 50,
     harvestAmount: [1, 2],
+    harvestSuccessRate: .31,
     actions: {
       harvest: (state) => mechanics.harvest (state, "seeds"),
     },
