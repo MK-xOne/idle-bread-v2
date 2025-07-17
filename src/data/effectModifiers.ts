@@ -46,7 +46,6 @@ export const effectModifiers = {
             [effect.resource]: merged,
           },
         }));
-
         break;
       }
 
@@ -62,11 +61,8 @@ export const effectModifiers = {
           }
           return updated;
         });
-
         break;
-}
-
-
+      }
     }
   },
 
@@ -76,7 +72,4 @@ export const effectModifiers = {
       extraYieldRange: [0, 0],
     };
   },
-
-
-
 };

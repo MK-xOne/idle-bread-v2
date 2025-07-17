@@ -155,7 +155,7 @@ const unlockTech = (techId: TechID) => {
           if (result.performed && rule?.chain) {
             rule.chain.forEach(chain => {
               const allowed = (chain.conditions ?? []).every(fn =>
-                fn({ resource: resId, action: actionType })
+                fn({ resource: resId, action: actionType, state: gameState})
               );
               if (allowed) {
               const chainedRule = actionRules[chain.action];

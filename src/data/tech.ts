@@ -52,9 +52,15 @@ export const techTree: Record<TechID, Tech> = {
       effects: [
         {
           type: 'harvestBonus',
-          resource: 'wildWheat',
+          resource: 'wildWheat', 
           successRateBonus: 0.25,
           extraYieldRange: [4, 7],
+        },
+        {
+          type: 'harvestBonus',
+          resource: 'seeds', 
+          successRateBonus: 0.25,
+          extraYieldRange: [1, 2],
         }
       ],
     },
