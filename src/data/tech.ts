@@ -34,7 +34,7 @@ export const techTree: Record<TechID, Tech> = {
     name: 'Discover Fire',
     description: 'Control the flame to change everything.',
     icon: '🔥',
-    cost: { wildWheat: 20, rocks: 15 },
+    cost: { wildWheat: 12, rocks: 12 },
     requires: [],
     unlocks: {
       techs: ['stoneTools', 'unlockPlanting', 'primitiveFeast'],  
@@ -70,7 +70,7 @@ export const techTree: Record<TechID, Tech> = {
   unlocks: {
     effects: [
       {
-        type: 'maxInventoryBonus',
+        type: 'MaxInventoryBonus',
         resource: 'all',
         amount: 100,
       },

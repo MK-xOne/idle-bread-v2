@@ -29,7 +29,10 @@ export const TechnologyPanel = () => {
       return updated;
     });
 
-    unlockTech(techId);
+    performAction(() => {
+      unlockTech(techId);
+    }, gameState, { allowWhenStarving: true });
+
   };
 
 

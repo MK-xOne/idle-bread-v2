@@ -58,6 +58,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   const gameState = {
     maxResourceBonuses,
+    setMaxResourceBonuses,
     resourceInteractions,
     setResourceInteractions,
     hunger,
@@ -83,11 +84,20 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setBakeClicks,
   };
 
-  const unlockTech = (techId: TechID) => {
-    setUnlockedTechs(prev => new Set(prev).add(techId));
-    const tech = techTree[techId];
+const unlockTech = (techId: TechID) => {
+  const tech = techTree[techId];
 
-    // Apply effects if any
+    // Check if already unlocked
+    if (!tech || unlockedTechs.has(techId)) return;
+
+    // Add to unlockedTechs (Set)
+    setUnlockedTechs(prev => {
+      const updated = new Set(prev);
+      updated.add(techId);
+      return updated;
+    });
+
+    // Apply effects
     if (tech.unlocks?.effects) {
       for (const effect of tech.unlocks.effects) {
         effectModifiers.applyEffect(effect, {
@@ -131,10 +141,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             () => {
               console.log(`[performNamedAction] Triggering action`, { actionType, resId });
 
-              const success = doNamedAction(gameState, resId, actionType);
+              const didPerform = doNamedAction(gameState, resId, actionType);
+
+              // ✅ Only reduce hunger if harvest was successful
+              if (didPerform && actionType === "harvest") {
+                setHunger(prev => Math.max(0, prev - 1));
+              }
 
               // ✅ Specific hardcoded chain: harvesting wildWheat triggers harvesting seeds
-              if (success && actionType === "harvest" && resId === "wildWheat") {
+              if (didPerform && actionType === "harvest" && resId === "wildWheat") {
                 console.log(`[performNamedAction] Chaining: wildWheat → seeds`);
                 doNamedAction(gameState, "seeds", "harvest");
               }
@@ -143,6 +158,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             { allowWhenStarving: actionType === 'eat' || actionType === 'feast' }
           );
         },
+
 
         // Stubbed action methods — implement as needed
         harvestWildWheat: () => {},

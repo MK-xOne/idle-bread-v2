@@ -74,7 +74,12 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     if (totalAmount <= 0) return false;
 
     const current = state.resources[resourceId];
-    const max = def?.maxAmount ?? Infinity;
+    const maxBonus = state.maxResourceBonuses?.[resourceId] ?? 0;
+    const max = (def?.maxAmount ?? Infinity) + maxBonus;
+    if (current >= max) {
+      console.log(`[Harvest] ${resourceId} is already at max capacity (${max}). Skipping.`);
+      return false;
+    }
     const newAmount = Math.min(current + totalAmount, max);
 
     state.setResources(prev => ({
