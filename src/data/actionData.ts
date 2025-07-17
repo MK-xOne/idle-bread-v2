@@ -84,10 +84,6 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     trackInteraction(state.setResourceInteractions, resourceId, 'harvest');
     state.discoverResource(resourceId);
 
-    if (resourceId === "wildWheat") {
-      onHarvestFromWildWheat(resourceId, state);
-    }
-
     if (resourceId === "primitiveWheat") {
       state.setPrimitiveWheatPlanted(false);
       state.setReadyToHarvestPrimitiveWheat(false);
@@ -222,20 +218,3 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     return true;
   },
 };
-
-// ---- Passive Effect ----
-
-export function onHarvestFromWildWheat(sourceId: ResourceID, state: GameState): void {
-  if (sourceId !== "wildWheat") return;
-
-  const current = state.resources.seeds;
-  const max = resources["seeds"].maxAmount ?? 50;
-
-  if (Math.random() < 0.51 && current < max) {
-    state.setResources(prev => ({
-      ...prev,
-      seeds: Math.min(prev.seeds + 1, max),
-    }));
-    trackInteraction(state.setResourceInteractions, "seeds", "harvest");
-  }
-}

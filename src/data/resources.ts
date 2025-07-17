@@ -86,9 +86,11 @@ export const resources: Record<ResourceID, Resource> = {
     description: 'Useful for planting new crops.',
     discovered: true,
     edible: false,
-    actions: {},
     maxAmount : 50,
     harvestAmount: [1, 2],
+    actions: {
+      harvest: (state) => mechanics.harvest (state, "seeds"),
+    },
   },
 
   flour: {

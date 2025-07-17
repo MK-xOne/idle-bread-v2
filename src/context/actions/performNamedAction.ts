@@ -18,5 +18,12 @@ export const performNamedAction = (
     return false;
   }
 
-  return resource.actions[action](state);   // ⚠️ assumes each action returns boolean
+  const result = (resource.actions[action] as (state: GameState) => boolean)(state);
+
+  if (resourceId === 'wildWheat' && action === 'harvest') {
+    performNamedAction(state, 'seeds', 'harvest');
+  }
+
+  return result;
 };
+
