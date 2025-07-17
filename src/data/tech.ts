@@ -46,7 +46,7 @@ export const techTree: Record<TechID, Tech> = {
     name: 'Stone Tools',
     description: 'Increase wild wheat harvest and success rate.',
     icon: '🔨',
-    cost: { wildWheat: 25, seeds: 10, rocks: 20 },
+    cost: { wildWheat: 15, seeds: 10, rocks: 10 },
     requires: ["discoverFire"],
     unlocks: {
       effects: [

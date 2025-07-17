@@ -142,9 +142,9 @@ const unlockTech = (techId: TechID) => {
               console.log(`[performNamedAction] Triggering action`, { actionType, resId });
 
               const didPerform = doNamedAction(gameState, resId, actionType);
+              const result = doNamedAction(gameState, resId, actionType);
 
-              // ✅ Only reduce hunger if harvest was successful
-              if (didPerform && actionType === "harvest") {
+              if (result.performed && result.affectsHunger) {
                 setHunger(prev => Math.max(0, prev - 1));
               }
 

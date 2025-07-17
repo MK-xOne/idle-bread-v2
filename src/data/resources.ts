@@ -1,5 +1,5 @@
 import type { GameState } from "../context/types";
-import { mechanics } from "./actionData";
+import { mechanics, type ActionType } from "./actionData";
 
 const getRandomInRange = ([min, max]: [number, number]) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
@@ -21,7 +21,7 @@ export interface Resource {
   hungerRestore?: number;
   eatCost?: number;
   maxAmount?: number;
-  harvestAmount? : [number, number];
+  harvestAmount?: [number, number];
   harvestSuccessRate?: number;
   discovered?: boolean;
   actions?: {

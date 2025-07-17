@@ -1,5 +1,8 @@
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
+import { actionLabels } from '../data/actionData';
+
+export type ActionType = keyof typeof actionLabels;
 
 export interface HarvestBonus {
   successRateBonus?: number;
