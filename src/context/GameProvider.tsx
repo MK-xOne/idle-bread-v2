@@ -49,7 +49,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
-
+  const [maxResourceBonuses, setMaxResourceBonuses] = useState<Partial<Record<ResourceID, number>>>({});
   const [primitiveWheatPlanted, setPrimitiveWheatPlanted] = useState(false);
   const [actionsSincePlanting, setActionsSincePlanting] = useState(0);
   const [readyToHarvestPrimitiveWheat, setReadyToHarvestPrimitiveWheat] = useState(false);
@@ -83,15 +83,21 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const unlockTech = (techId: TechID) => {
+    setUnlockedTechs(prev => new Set(prev).add(techId));
     const tech = techTree[techId];
-    if (!tech) return;
 
-    setUnlockedTechs(prev => {
-      const updated = new Set(prev);
-      updated.add(techId);
-      return updated;
-    });
+    // Apply effects if any
+    if (tech.unlocks?.effects) {
+      for (const effect of tech.unlocks.effects) {
+        effectModifiers.applyEffect(effect, {
+          ...gameState,
+          setModifiers,
+          setMaxResourceBonuses,
+        });
+      }
+    }
 
+    // Unlock actions
     if (tech.unlocks?.actions) {
       setUnlockedActions(prev => {
         const newSet = new Set(prev);
@@ -100,15 +106,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
-    if (tech.unlocks?.effects) {
-      for (const effect of tech.unlocks.effects) {
-        effectModifiers.applyEffect(effect, {
-          ...gameState,
-          setModifiers,
-        });
-      }
+    // Unlock resources
+    if (tech.unlocks?.resources) {
+      tech.unlocks.resources.forEach(res => discoverResource(res));
     }
   };
+
 
   return (
     <GameContext.Provider
@@ -121,9 +124,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         },        
           performNamedAction: (id: string) => {
           const [actionType, resourceId] = id.split('_');
+            const resId = resourceId as ResourceID;
+
           performAction(
             () => {
-              doNamedAction(gameState, resourceId as ResourceID, actionType);
+              const success = doNamedAction(gameState, resourceId as ResourceID, resId, actionType);
+              if (success && actionType === "harvest") {
+                Object.values(resources).forEach(resource => {
+                 if (r.onHarvestFrom) r.onHarvestFrom(resId, gameState);
+                });
+              }
             },
             gameState,
             { allowWhenStarving: actionType === 'eat' || actionType === 'feast' }

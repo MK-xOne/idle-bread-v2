@@ -1,7 +1,5 @@
 import type { GameState } from "../context/types";
 import { mechanics } from "./actionData";
-import { onHarvestFromWildWheat } from "./actionData";
-
 
 const getRandomInRange = ([min, max]: [number, number]) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
@@ -27,6 +25,7 @@ export interface Resource {
   actions?: {
     [action: string]: (state: GameState) => void;
   };
+  onHarvestFrom?: (sourceID: ResourceID, state: GameState) => void;
 }
 
 export const resources: Record<ResourceID, Resource> = {
@@ -35,7 +34,7 @@ export const resources: Record<ResourceID, Resource> = {
   id: 'rocks',
   name: 'Rocks',
   description: 'A hard, unyielding material useful for tools and construction.',
-  edible: false, 
+  edible: false,
   icon: '🪨',
   maxAmount: 25,
   harvestAmount: [1, 2],
@@ -85,9 +84,9 @@ export const resources: Record<ResourceID, Resource> = {
     id: 'seeds',
     name: '🌰 Seeds',
     description: 'Useful for planting new crops.',
-    actions: {
-      harvest: onHarvestFromWildWheat,    
-    },
+    discovered: true,
+    edible: false,
+    actions: {},
     maxAmount : 50,
     harvestAmount: [1, 2],
   },

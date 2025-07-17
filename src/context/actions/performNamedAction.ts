@@ -4,19 +4,19 @@ import { resources } from '../../data/resources';
 
 /**
  * Executes a named action (like 'harvest', 'eat', 'grind') for a specific resource.
- * This is a generic dispatcher that checks if the resource has the action defined.
+ * Returns true if the action function exists and ran, false otherwise.
  */
 export const performNamedAction = (
   state: GameState,
   resourceId: keyof typeof resources,
   action: string
-) => {
+): boolean => {
   const resource = resources[resourceId];
 
-  if (!resource || !resource.actions || typeof resource.actions[action] !== 'function') {
+  if (!resource?.actions || typeof resource.actions[action] !== 'function') {
     console.warn(`[performNamedAction] Action '${action}' not found for resource '${resourceId}'`);
-    return;
+    return false;
   }
 
-  resource.actions[action](state);
+  return resource.actions[action](state);   // ⚠️ assumes each action returns boolean
 };

@@ -9,7 +9,8 @@ export type TechID =
   | 'primitiveFeast'
   | 'unlockWheel'
   | 'unlockFlour'
-  | 'unlockBread';
+  | 'unlockBread'
+  |  'pottery';
 
 export interface Tech {
   id: TechID;
@@ -57,8 +58,26 @@ export const techTree: Record<TechID, Tech> = {
         }
       ],
     },
-    
   },
+
+  pottery: {
+  id: 'pottery',
+  name: 'Pottery',
+  description: 'Craft durable containers to store more.',
+  icon: '🏺',
+  cost: { rocks: 25 },
+  requires: ['discoverFire', 'stoneTools'], // ✅ Fire + Stone Tools
+  unlocks: {
+    effects: [
+      {
+        type: 'maxAmountBonus',
+        resource: 'all',
+        amount: 100,
+      },
+    ],
+  },
+},
+
 
   unlockPlanting: {
     id: 'unlockPlanting',

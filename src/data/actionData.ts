@@ -1,9 +1,7 @@
 import type { GameState } from "../context/types";
 import type { ResourceID } from "./resources";
 import { resources } from '../data/resources';
-import { effectModifiers } from './effectModifiers';
 import { trackInteraction } from './tracking';
-
 
 // ---- Action Types ----
 
@@ -14,8 +12,8 @@ export type ActionType =
   | "plant"
   | "grind"
   | "bake"
-  | "grow"
-  
+  | "grow";
+
 export type MechanicFunction = (state: GameState, resourceId?: ResourceID) => boolean;
 
 // ---- UI Labels ----
@@ -39,7 +37,7 @@ export const actionLabels: Record<ActionType, { label: string; description?: str
   },
   grow: {
     label: "🌱 Growing",
-    description: "The seeds planted are now growing."  
+    description: "The seeds planted are now growing.",
   },
   grind: {
     label: "🌀 Grind",
@@ -54,6 +52,7 @@ export const actionLabels: Record<ActionType, { label: string; description?: str
 // ---- Mechanics ----
 
 export const mechanics: Record<ActionType, MechanicFunction> = {
+
   harvest: (state, resourceId) => {
     if (!resourceId) return false;
 
@@ -64,21 +63,18 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const successRateBonus = bonus.successRateBonus ?? 0;
     const extraRange = bonus.extraYieldRange ?? [0, 0];
 
-    // 🌱 Determine if harvest is successful (75% base + bonus)
     const successChance = 0.75 + successRateBonus;
-    if (Math.random() > successChance) return false;
+    const isSuccess = Math.random() <= successChance;
+    if (!isSuccess) return false;
 
-    // 🌾 Calculate base + bonus yield
     const baseAmount = Math.floor(Math.random() * (baseRange[1] - baseRange[0] + 1)) + baseRange[0];
     const extraAmount = Math.floor(Math.random() * (extraRange[1] - extraRange[0] + 1)) + extraRange[0];
     const totalAmount = baseAmount + extraAmount;
-
     if (totalAmount <= 0) return false;
 
     const current = state.resources[resourceId];
     const max = def?.maxAmount ?? Infinity;
     const newAmount = Math.min(current + totalAmount, max);
-    const harvested = newAmount - current;
 
     state.setResources(prev => ({
       ...prev,
@@ -86,21 +82,16 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     }));
 
     trackInteraction(state.setResourceInteractions, resourceId, 'harvest');
-
     state.discoverResource(resourceId);
 
+    if (resourceId === "wildWheat") {
+      onHarvestFromWildWheat(resourceId, state);
+    }
 
-    // 🔁 Passive effects
-    Object.values(resources).forEach(res => {
-      res.onHarvestFrom?.(resourceId, state);
-    });
-
-    // 🔄 Primitive wheat special case
     if (resourceId === "primitiveWheat") {
       state.setPrimitiveWheatPlanted(false);
       state.setReadyToHarvestPrimitiveWheat(false);
       state.setActionsSincePlanting(0);
-      console.log('[HARVEST] primitive wheat reset after harvest');
     }
 
     return true;
@@ -109,47 +100,40 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   eat: (state, resourceId) => {
     if (!resourceId) return false;
 
-    const amount = state.resources[resourceId];
     const def = resources[resourceId];
     const cost = def?.eatCost ?? 1;
     const restore = def?.hungerRestore ?? 0;
+    if (state.resources[resourceId] < cost || state.hunger >= 100) return false;
 
-    if (amount >= cost && state.hunger < 100) {
-      state.setResources(prev => ({
-        ...prev,
-        [resourceId]: prev[resourceId] - cost,
-      }));
-      trackInteraction(state.setResourceInteractions, resourceId, 'eat');
-      state.setHunger(prev => Math.min(100, prev + restore));
-      return true;
-    }
-
-    return false;
+    state.setResources(prev => ({
+      ...prev,
+      [resourceId]: prev[resourceId] - cost,
+    }));
+    state.setHunger(prev => Math.min(100, prev + restore));
+    trackInteraction(state.setResourceInteractions, resourceId, 'eat');
+    return true;
   },
 
   feast: (state, resourceId) => {
     if (!resourceId) return false;
 
-    const amount = state.resources[resourceId];
     const def = resources[resourceId];
     const restore = def?.hungerRestore ?? 0;
     const cost = def?.eatCost ?? 1;
-
     const hungerToRestore = 100 - state.hunger;
+
     const neededUnits = Math.ceil(hungerToRestore / restore);
     const totalCost = neededUnits * cost;
 
-    if (amount >= totalCost && state.hunger < 100) {
-      state.setResources(prev => ({
-        ...prev,
-        [resourceId]: prev[resourceId] - totalCost,
-      }));
-      trackInteraction(state.setResourceInteractions, resourceId, 'feast');
-      state.setHunger(100);
-      return true;
-    }
+    if (state.resources[resourceId] < totalCost || state.hunger >= 100) return false;
 
-    return false;
+    state.setResources(prev => ({
+      ...prev,
+      [resourceId]: prev[resourceId] - totalCost,
+    }));
+    state.setHunger(100);
+    trackInteraction(state.setResourceInteractions, resourceId, 'feast');
+    return true;
   },
 
   plant: (state) => {
@@ -162,11 +146,10 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
         ...prev,
         seeds: prev.seeds - 5,
       }));
-      trackInteraction(state.setResourceInteractions, resourceId, 'plant');
       state.setPrimitiveWheatPlanted(true);
-      console.log('[PLANT] primitive wheat planted!');
       state.setActionsSincePlanting(0);
       state.setReadyToHarvestPrimitiveWheat(false);
+      trackInteraction(state.setResourceInteractions, "seeds", "plant");
       mechanics.grow(state);
       return true;
     }
@@ -175,30 +158,19 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 
   grow: (state) => {
-    const {
-      primitiveWheatPlanted,
-      readyToHarvestPrimitiveWheat,
-      setActionsSincePlanting,
-      setReadyToHarvestPrimitiveWheat,
-    } = state;
-
-    if (primitiveWheatPlanted && !readyToHarvestPrimitiveWheat) {
-      setActionsSincePlanting(prev => {
+    if (state.primitiveWheatPlanted && !state.readyToHarvestPrimitiveWheat) {
+      state.setActionsSincePlanting(prev => {
         const next = prev + 1;
         if (next >= 20) {
-          setReadyToHarvestPrimitiveWheat(true);
-          state.discoverResource('primitiveWheat'); 
-
+          state.setReadyToHarvestPrimitiveWheat(true);
+          state.discoverResource("primitiveWheat");
         }
-        trackInteraction(state.setResourceInteractions, resourceId, 'grow');
+        trackInteraction(state.setResourceInteractions, "seeds", "grow");
         return next;
-        console.log('[GROW] growing tick triggered');
       });
     }
-
     return true;
   },
-
 
   grind: (state) => {
     if (state.resources.primitiveWheat >= 1) {
@@ -216,8 +188,8 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           ...prev,
           flour: prev.flour + 1,
         }));
-        trackInteraction(state.setResourceInteractions, resourceId, 'grind');
         state.discoverResource("flour");
+        trackInteraction(state.setResourceInteractions, "flour", "grind");
       }
       return next;
     });
@@ -241,8 +213,8 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           ...prev,
           bread: prev.bread + 1,
         }));
-        trackInteraction(state.setResourceInteractions, resourceId, 'bake');
         state.discoverResource("bread");
+        trackInteraction(state.setResourceInteractions, "bread", "bake");
       }
       return next;
     });
@@ -251,27 +223,19 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 };
 
-export function onHarvestFromWildWheat(state: GameState): void {
-  const resource = resources["wildWheat"];
-  const current = state.resources.wildWheat;
-  const max = resource.maxAmount;
-  const [min, maxYield] = resource.harvestAmount ?? [1, 1];
-  const amount = Math.floor(Math.random() * (maxYield - min + 1)) + min;
+// ---- Passive Effect ----
 
-  if (current >= max) return;
+export function onHarvestFromWildWheat(sourceId: ResourceID, state: GameState): void {
+  if (sourceId !== "wildWheat") return;
 
-  state.setResources(prev => ({
-    ...prev,
-    wildWheat: Math.min(prev.wildWheat + amount, max),
-  }));
+  const current = state.resources.seeds;
+  const max = resources["seeds"].maxAmount ?? 50;
 
-  if (Math.random() < 0.51) {
+  if (Math.random() < 0.51 && current < max) {
     state.setResources(prev => ({
       ...prev,
-      seeds: prev.seeds + 1,
+      seeds: Math.min(prev.seeds + 1, max),
     }));
+    trackInteraction(state.setResourceInteractions, "seeds", "harvest");
   }
-
-  trackInteraction(state.setResourceInteractions, "wildWheat", "harvested");
 }
-

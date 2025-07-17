@@ -1,4 +1,5 @@
 import type { GameState } from "../context/types";
+import type { ResourceID } from "./resources";
 
 type HarvestBonusEffect = {
   type: 'harvestBonus';
@@ -7,7 +8,13 @@ type HarvestBonusEffect = {
   extraYieldRange?: [number, number];
 };
 
-type Effect = HarvestBonusEffect; // Add more types as needed later
+type MaxInventoryBonus = {
+  type: 'MaxInventoryBonus';
+  resource : ResourceID | 'all';
+  amount: number
+};
+
+type Effect = HarvestBonusEffect | MaxInventoryBonus; // Add more types as needed later
 
 export const effectModifiers = {
   applyEffect: (effect: Effect, state: GameState) => {
@@ -39,6 +46,24 @@ export const effectModifiers = {
 
         break;
       }
+
+      case 'MaxInventoryBonus': {
+        const targetResources = effect.resource === 'all'
+          ? Object.keys(state.resources) as ResourceID[]
+          : [effect.resource];
+
+        state.setMaxResourceBonuses(prev => {
+          const updated = { ...prev };
+          for (const res of targetResources) {
+            updated[res] = (updated[res] ?? 0) + effect.amount;
+          }
+          return updated;
+        });
+
+        break;
+}
+
+
     }
   },
 
@@ -48,4 +73,7 @@ export const effectModifiers = {
       extraYieldRange: [0, 0],
     };
   },
+
+
+
 };
