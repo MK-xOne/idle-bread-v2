@@ -7,7 +7,7 @@ const formatLabel = (id: string) =>
     .replace(/^./, str => str.toUpperCase());
 
 export const InventoryDisplay = () => {
-  const { resources, discoveredResources } = useGame();;
+  const { resources, discoveredResources, maxResourceBonuses } = useGame();;
 
   return (
     <div className="panel">
@@ -16,7 +16,9 @@ export const InventoryDisplay = () => {
         {(Object.entries(resources) as [ResourceID, number][])
           .filter(([key]) => discoveredResources.has(key))
           .map(([key, value]) => {
-            const max = resourceMeta[key]?.maxAmount ?? "∞";
+            const baseMax = resourceMeta[key]?.maxAmount ?? Infinity;
+            const bonus = maxResourceBonuses?.[key] ?? 0;
+            const max = baseMax + bonus;
             return (
               <div
                 key={key}

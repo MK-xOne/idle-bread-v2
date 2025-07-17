@@ -25,6 +25,9 @@ export interface GameContextType {
   resources: Record<ResourceID, number>;
   setResources: React.Dispatch<React.SetStateAction<Record<ResourceID, number>>>;
   
+  // InventoryBonus
+  maxResourceBonuses: Partial<Record<ResourceID, number>>;
+
   // Data Tracker
   resourceInteractions: InteractionTracker;
   setResourceInteractions: React.Dispatch<React.SetStateAction<InteractionTracker>>;

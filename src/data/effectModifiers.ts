@@ -14,9 +14,8 @@ type MaxInventoryBonus = {
   amount: number
 };
 
-type Effect = 
-  | { type: "harvestBonus" }
-  | { type: "MaxInventoryBonus" }
+type Effect = HarvestBonusEffect | MaxInventoryBonus;
+
 
 export const effectModifiers = {
   applyEffect: (effect: Effect, state: GameState) => {

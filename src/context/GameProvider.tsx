@@ -9,7 +9,6 @@ import { performNamedAction as doNamedAction, performNamedAction } from './actio
 import { effectModifiers } from '../data/effectModifiers';
 import type { Modifiers } from './types';
 import type { InteractionTracker } from './types';
-import type { ActionType } from '../data/actionData';
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [resources, setResources] = useState<Record<ResourceID, number>>({
@@ -58,6 +57,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [bakeClicks, setBakeClicks] = useState(0);
 
   const gameState = {
+    maxResourceBonuses,
     resourceInteractions,
     setResourceInteractions,
     hunger,
