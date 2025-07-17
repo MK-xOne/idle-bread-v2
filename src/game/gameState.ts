@@ -25,4 +25,10 @@ export interface GameState {
 
   bakeClicks: number;
   setBakeClicks: React.Dispatch<React.SetStateAction<number>>;
+
+  plantedAtTick: number | null;
+  setPlantedAtTick: React.Dispatch<React.SetStateAction<number | null>>;
+
+  getTick: () => number;
 }
+

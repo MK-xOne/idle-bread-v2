@@ -12,7 +12,7 @@ import type { InteractionTracker } from './types';
 import type { ActionType } from '../data/actionData';
 import { actionRules } from '../data/actionRules';
 import { actionLabels } from '../data/actionData'; // if not already present
-
+import { advanceTick } from '../data/tracking';
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [resources, setResources] = useState<Record<ResourceID, number>>({
@@ -52,6 +52,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     new Set(["harvest_wildWheat", "eat_wildWheat", "harvest_rocks"])
   );
 
+  const [plantedAtTick, setPlantedAtTick] = useState<number | null>(null);
+  const getTick = () => resourceInteractions.__ticks ?? 0;
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
   const [maxResourceBonuses, setMaxResourceBonuses] = useState<Partial<Record<ResourceID, number>>>({});
   const [primitiveWheatPlanted, setPrimitiveWheatPlanted] = useState(false);
@@ -78,6 +80,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     unlockedActions,
     primitiveWheatPlanted,
     setPrimitiveWheatPlanted,
+    plantedAtTick,
+    setPlantedAtTick,
+    getTick,
     actionsSincePlanting,
     setActionsSincePlanting,
     readyToHarvestPrimitiveWheat,
@@ -143,6 +148,9 @@ const unlockTech = (techId: TechID) => {
           const actionType = actionTypeRaw as ActionType;
           const rule = actionRules[actionType];
           const result = doNamedAction(gameState, resId, actionType);
+          if (result.performed) {
+          advanceTick(setResourceInteractions);
+          }
           const hungerCost = actionLabels[actionType]?.hungerCost ?? 0;
           const applyHungerCost = (cost: number) => {
             if (cost > 0) {
@@ -151,7 +159,6 @@ const unlockTech = (techId: TechID) => {
           };
 
           if (result.performed) applyHungerCost(hungerCost);
-
           if (result.performed && rule?.chain) {
             rule.chain.forEach(chain => {
               const allowed = (chain.conditions ?? []).every(fn =>

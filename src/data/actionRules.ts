@@ -57,11 +57,41 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
   },
   plant: {
     blockWhenStarving: true,
+    conditions: [
+      ({ state }) => state.resources.seeds >= 5,
+      ({ state }) => !state.primitiveWheatPlanted,
+      ({ state }) => !state.readyToHarvestPrimitiveWheat,
+  ]
   },
   grind: {
     blockWhenStarving: true,
+    conditions: [
+    ({ state }) => state.resources.primitiveWheat >= 1,
+    ],
   },
   bake: {
     blockWhenStarving: true,
+    conditions: [
+    ({ state }) => state.resources.flour >= 1,
+    ],
   },
+  eat: {
+  conditions: [
+    ({ resource, state }) => state.resources[resource] >= (resources[resource]?.eatCost ?? 1),
+    ({ state }) => state.hunger < 100,
+  ]
+  },
+  feast: {
+  conditions: [
+    ({ resource, state }) => {
+      const hunger = state.hunger;
+      const restore = resources[resource]?.hungerRestore ?? 0;
+      const needed = 100 - hunger;
+      const requiredAmount = Math.ceil(needed / restore);
+      return state.resources[resource] >= requiredAmount;
+    },
+    ({ state }) => state.hunger < 100,
+  ]
+  },
+
 };

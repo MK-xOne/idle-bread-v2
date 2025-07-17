@@ -18,6 +18,8 @@ export interface Modifiers {
 export type ResourceInteractionType = 'harvested' | 'eaten' | 'planted' | 'grown' | 'grinded' | 'baked';
 
 export type InteractionTracker = {
+  __ticks?: number;
+} & {
   [resourceId in ResourceID]?: {
     [action in ResourceInteractionType]?: number;
   };

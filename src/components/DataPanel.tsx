@@ -14,9 +14,12 @@ const DataPanel = ({ onClose }: { onClose: () => void }) => {
           <li key={resourceId}>
             <strong>{resourceId}:</strong>
             <ul>
-              {Object.entries(stats).map(([action, count]) => (
-                <li key={action}>{action}: {count}</li>
-              ))}
+              {typeof stats === 'object'
+                ? Object.entries(stats).map(([action, count]) => (
+                    <li key={action}>{action}: {count}</li>
+                  ))
+                : <li>{stats}</li>
+              }
             </ul>
           </li>
         ))}

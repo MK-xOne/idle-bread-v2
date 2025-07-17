@@ -112,7 +112,6 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const def = resources[resourceId];
     const cost = def?.eatCost ?? 1;
     const restore = def?.hungerRestore ?? 0;
-    if (state.resources[resourceId] < cost || state.hunger >= 100) return false;
 
     state.setResources(prev => ({
       ...prev,
@@ -134,8 +133,6 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const neededUnits = Math.ceil(hungerToRestore / restore);
     const totalCost = neededUnits * cost;
 
-    if (state.resources[resourceId] < totalCost || state.hunger >= 100) return false;
-
     state.setResources(prev => ({
       ...prev,
       [resourceId]: prev[resourceId] - totalCost,
@@ -146,48 +143,41 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 
   plant: (state) => {
+    state.setResources(prev => ({
+      ...prev,
+      seeds: prev.seeds - 5,
+    }));
+    state.setPrimitiveWheatPlanted(true);
+    state.setPlantedAtTick(state.getTick());
+    state.setReadyToHarvestPrimitiveWheat(false);
+    trackInteraction(state.setResourceInteractions, "seeds", "plant");
+    return true;
+  },
+
+  grow: (state) => {
+    const plantedAt = state.plantedAtTick;
+    const currentTick = state.getTick?.() ?? 0;
+
     if (
-      state.resources.seeds >= 5 &&
-      !state.primitiveWheatPlanted &&
-      !state.readyToHarvestPrimitiveWheat
+      state.primitiveWheatPlanted &&
+      !state.readyToHarvestPrimitiveWheat &&
+      plantedAt !== null &&
+      currentTick - plantedAt >= 20
     ) {
-      state.setResources(prev => ({
-        ...prev,
-        seeds: prev.seeds - 5,
-      }));
-      state.setPrimitiveWheatPlanted(true);
-      state.setActionsSincePlanting(0);
-      state.setReadyToHarvestPrimitiveWheat(false);
-      trackInteraction(state.setResourceInteractions, "seeds", "plant");
-      mechanics.grow(state);
+      state.setReadyToHarvestPrimitiveWheat(true);
+      state.discoverResource("primitiveWheat");
+      trackInteraction(state.setResourceInteractions, "primitiveWheat", "grown");
       return true;
     }
 
     return false;
   },
 
-  grow: (state) => {
-    if (state.primitiveWheatPlanted && !state.readyToHarvestPrimitiveWheat) {
-      state.setActionsSincePlanting(prev => {
-        const next = prev + 1;
-        if (next >= 20) {
-          state.setReadyToHarvestPrimitiveWheat(true);
-          state.discoverResource("primitiveWheat");
-        }
-        trackInteraction(state.setResourceInteractions, "seeds", "grow");
-        return next;
-      });
-    }
-    return true;
-  },
-
   grind: (state) => {
-    if (state.resources.primitiveWheat >= 1) {
       state.setResources(prev => ({
         ...prev,
         primitiveWheat: prev.primitiveWheat - 1,
       }));
-    }
 
     state.setGrindClicks(prev => {
       const next = prev + 1;
@@ -207,12 +197,10 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 
   bake: (state) => {
-    if (state.resources.flour >= 1) {
       state.setResources(prev => ({
         ...prev,
         flour: prev.flour - 1,
       }));
-    }
 
     state.setBakeClicks(prev => {
       const next = prev + 1;
