@@ -18,40 +18,40 @@ export type MechanicFunction = (state: GameState, resourceId?: ResourceID) => bo
 
 // ---- UI Labels ----
 
-export const actionLabels: Record<ActionType, { label: string; hungerImpact: boolean; description?: string }> = {
+export const actionLabels: Record<ActionType, { label: string; hungerCost?: number; description?: string }> = {
   harvest: {
     label: "🌾 Harvest",
-    hungerImpact: true,
+    hungerCost: 1,
     description: "Gather natural resources with a chance of success.",
   },
   eat: {
     label: "🍽️ Eat",
-    hungerImpact: true,
+    hungerCost: 0,
     description: "Consume a small amount of food to restore some hunger.",
   },
   feast: {
     label: "🥣 Feast",
-    hungerImpact: true,
+    hungerCost: 0,
     description: "Use more food to completely restore hunger.",
   },
   plant: {
     label: "🌱 Plant",
-    hungerImpact: true,
+    hungerCost: 1,
     description: "Use seeds to grow primitive wheat over time.",
   },
   grow: {
     label: "🌱 Growing",
-    hungerImpact: true,
+    hungerCost: 0,
     description: "The seeds planted are now growing.",
   },
   grind: {
     label: "🌀 Grind",
-    hungerImpact: true,
+    hungerCost: 1,
     description: "Manually grind wheat into flour by clicking.",
   },
   bake: {
     label: "🔥 Bake",
-    hungerImpact: true,
+    hungerCost: 1,
     description: "Bake flour into nourishing bread using fire.",
   },
 } as const;

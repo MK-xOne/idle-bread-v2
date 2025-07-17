@@ -9,6 +9,10 @@ import { performNamedAction as doNamedAction, performNamedAction } from './actio
 import { effectModifiers } from '../data/effectModifiers';
 import type { Modifiers } from './types';
 import type { InteractionTracker } from './types';
+import type { ActionType } from '../data/actionData';
+import { actionRules } from '../data/actionRules';
+import { actionLabels } from '../data/actionData'; // if not already present
+
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [resources, setResources] = useState<Record<ResourceID, number>>({
@@ -128,49 +132,41 @@ const unlockTech = (techId: TechID) => {
     <GameContext.Provider
       value={{
         ...gameState,
-        unlockTech,
-        performAction: (cb) => {
-          performAction(cb, gameState);                 // your existing logic
-        },        
-          
+        unlockTech,    
+                  
         performNamedAction: (id: string) => {
-          const [actionType, resourceId] = id.split('_');
+          if (!id.includes('_')) return;
+          const [actionTypeRaw, resourceId] = id.split('_');
+          if (!actionTypeRaw || !resourceId || !(actionTypeRaw in actionLabels)) return;
+
           const resId = resourceId as ResourceID;
+          const actionType = actionTypeRaw as ActionType;
+          const rule = actionRules[actionType];
+          const result = doNamedAction(gameState, resId, actionType);
+          const hungerCost = actionLabels[actionType]?.hungerCost ?? 0;
+          const applyHungerCost = (cost: number) => {
+            if (cost > 0) {
+              setHunger(prev => Math.max(0, prev - cost));
+            }
+          };
 
-          performAction(
-            () => {
-              console.log(`[performNamedAction] Triggering action`, { actionType, resId });
+          if (result.performed) applyHungerCost(hungerCost);
 
-              const didPerform = doNamedAction(gameState, resId, actionType);
-              const result = doNamedAction(gameState, resId, actionType);
+          if (result.performed && rule?.chain) {
+            rule.chain.forEach(chain => {
+              const allowed = (chain.conditions ?? []).every(fn =>
+                fn({ resource: resId, action: actionType })
+              );
+              if (allowed) {
+              const chainedRule = actionRules[chain.action];
+              const chainedResult = doNamedAction(gameState, chain.target, chain.action);
+              const chainedHungerCost = actionLabels[chain.action]?.hungerCost ?? 0;
 
-              if (result.performed && result.affectsHunger) {
-                setHunger(prev => Math.max(0, prev - 1));
+              if (chainedResult.performed) applyHungerCost(chainedHungerCost);
               }
-
-              // ✅ Specific hardcoded chain: harvesting wildWheat triggers harvesting seeds
-              if (didPerform && actionType === "harvest" && resId === "wildWheat") {
-                console.log(`[performNamedAction] Chaining: wildWheat → seeds`);
-                doNamedAction(gameState, "seeds", "harvest");
-              }
-            },
-            gameState,
-            { allowWhenStarving: actionType === 'eat' || actionType === 'feast' }
-          );
+            });
+          }
         },
-
-
-        // Stubbed action methods — implement as needed
-        harvestWildWheat: () => {},
-        plantPrimitiveWheat: () => {},
-        harvestPrimitiveWheat: () => {},
-        eatWildWheat: () => {},
-        eatPrimitiveWheat: () => {},
-        grindFlour: () => {},
-        bakeBread: () => {},
-        eatBread: () => {},
-        feastOnWildWheat: () => {},
-        feastOnPrimitiveWheat: () => {},
       }}
     >
       {children}

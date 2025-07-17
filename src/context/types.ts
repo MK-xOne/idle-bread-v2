@@ -44,7 +44,7 @@ export interface GameContextType {
   setModifiers: (modifierUpdater: (prev: Modifiers) => Modifiers) => void;
 
   // 🧠 Action dispatcher
-  performAction: (cb: () => void) => void;
+  performAction?: (cb: () => void) => void;
   performNamedAction: (id: string) => void;
 
   // 🧭 Discovery
@@ -77,14 +77,14 @@ export interface GameContextType {
   setBakeClicks: React.Dispatch<React.SetStateAction<number>>;
 
   // 🔧 Stubbed action methods (to be implemented)
-  harvestWildWheat: () => void;
-  plantPrimitiveWheat: () => void;
-  harvestPrimitiveWheat: () => void;
-  eatWildWheat: () => void;
-  eatPrimitiveWheat: () => void;
-  grindFlour: () => void;
-  bakeBread: () => void;
-  eatBread: () => void;
-  feastOnWildWheat: () => void;
-  feastOnPrimitiveWheat: () => void;
+  harvestWildWheat?: () => void;
+  plantPrimitiveWheat?: () => void;
+  harvestPrimitiveWheat?: () => void;
+  eatWildWheat?: () => void;
+  eatPrimitiveWheat?: () => void;
+  grindFlour?: () => void;
+  bakeBread?: () => void;
+  eatBread?: () => void;
+  feastOnWildWheat?: () => void;
+  feastOnPrimitiveWheat?: () => void;
 }

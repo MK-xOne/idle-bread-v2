@@ -19,6 +19,7 @@ export interface Resource {
   description?: string;
   edible?: boolean;
   hungerRestore?: number;
+  hungerCost?: number
   eatCost?: number;
   maxAmount?: number;
   harvestAmount?: [number, number];
