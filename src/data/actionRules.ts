@@ -2,6 +2,8 @@ import type { ActionType } from './actionData';
 import type { ResourceID } from './resources';
 import { resources } from './resources';
 import type { GameState } from '../context/types';
+import { mechanics } from './actionData';
+
 
 export interface ActionRule {
   chain?: {
@@ -9,7 +11,7 @@ export interface ActionRule {
     action: ActionType;
     conditions?: ((ctx: { resource: ResourceID; action: ActionType; state: GameState }) => boolean)[];
   }[];
-  
+  onTick?: (state: GameState) => void;
   conditions?: ((ctx: { resource: ResourceID; action: ActionType; state: GameState }) => boolean)[];
   alwaysConsumesHunger?: boolean;
   blockWhenStarving?: boolean;
@@ -62,6 +64,16 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
       ({ state }) => !state.primitiveWheatPlanted,
       ({ state }) => !state.readyToHarvestPrimitiveWheat,
   ]
+  },
+  grow: {
+    onTick: (state) => {
+      if (
+        state.primitiveWheatPlanted &&
+        !state.readyToHarvestPrimitiveWheat
+      ) {
+        mechanics.grow(state);
+      }
+    }
   },
   grind: {
     blockWhenStarving: true,

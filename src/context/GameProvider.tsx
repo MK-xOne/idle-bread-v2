@@ -83,8 +83,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     plantedAtTick,
     setPlantedAtTick,
     getTick,
-    actionsSincePlanting,
-    setActionsSincePlanting,
     readyToHarvestPrimitiveWheat,
     setReadyToHarvestPrimitiveWheat,
     grindClicks,
@@ -150,6 +148,9 @@ const unlockTech = (techId: TechID) => {
           const result = doNamedAction(gameState, resId, actionType);
           if (result.performed) {
           advanceTick(setResourceInteractions);
+          Object.values(actionRules).forEach(rule => {
+            rule.onTick?.(gameState);
+          });
           }
           const hungerCost = actionLabels[actionType]?.hungerCost ?? 0;
           const applyHungerCost = (cost: number) => {

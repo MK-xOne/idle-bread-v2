@@ -127,7 +127,6 @@ export const techTree: Record<TechID, Tech> = {
     icon: '🛞',
     cost: { primitiveWheat: 100 },
     unlocks: {
-      resources: ['flour'],
       techs: ['unlockFlour'],
     },
   },
@@ -140,6 +139,7 @@ export const techTree: Record<TechID, Tech> = {
     cost: { wildWheat: 250, primitiveWheat: 150 },
     unlockedByDefault: true,
     unlocks: {
+      resources: ['flour'],
       actions: ['grind'],
     },
   },

@@ -61,6 +61,9 @@ export const actionLabels: Record<ActionType, { label: string; hungerCost?: numb
 export const mechanics: Record<ActionType, MechanicFunction> = {
 
   harvest: (state, resourceId) => {
+    if (resourceId === "primitiveWheat" && !state.readyToHarvestPrimitiveWheat) {
+      return false;
+    }
     if (!resourceId) return false;
 
     const def = resources[resourceId];
@@ -73,7 +76,10 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const baseRate = def?.harvestSuccessRate ?? 0.75;
     const successChance = baseRate + successRateBonus;
     const isSuccess = Math.random() <= successChance;
-    if (!isSuccess) return false;
+    if (!isSuccess) {
+      trackInteraction(state.setResourceInteractions, resourceId, 'harvest');
+      return true; // harvest was attempted even if nothing was gained
+    }
 
     const baseAmount = Math.floor(Math.random() * (baseRange[1] - baseRange[0] + 1)) + baseRange[0];
     const extraAmount = Math.floor(Math.random() * (extraRange[1] - extraRange[0] + 1)) + extraRange[0];
@@ -155,19 +161,25 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 
   grow: (state) => {
-    const plantedAt = state.plantedAtTick;
     const currentTick = state.getTick?.() ?? 0;
+
+    // If no tick was stored yet, initialize it
+    if (state.plantedAtTick === null) {
+      state.setPlantedAtTick(currentTick);
+      return true;
+    }
+
+    const elapsed = currentTick - state.plantedAtTick;
 
     if (
       state.primitiveWheatPlanted &&
       !state.readyToHarvestPrimitiveWheat &&
-      plantedAt !== null &&
-      currentTick - plantedAt >= 20
+      elapsed >= 20
     ) {
       state.setReadyToHarvestPrimitiveWheat(true);
+      state.setPlantedAtTick(null); // clear to avoid re-trigger
       state.discoverResource("primitiveWheat");
       trackInteraction(state.setResourceInteractions, "primitiveWheat", "grown");
-      return true;
     }
 
     return false;

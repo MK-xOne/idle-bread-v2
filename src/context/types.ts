@@ -65,9 +65,6 @@ export interface GameContextType {
   primitiveWheatPlanted: boolean;
   setPrimitiveWheatPlanted: React.Dispatch<React.SetStateAction<boolean>>;
 
-  actionsSincePlanting: number;
-  setActionsSincePlanting: React.Dispatch<React.SetStateAction<number>>;
-
   readyToHarvestPrimitiveWheat: boolean;
   setReadyToHarvestPrimitiveWheat: React.Dispatch<React.SetStateAction<boolean>>;
 
