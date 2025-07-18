@@ -1,89 +1,88 @@
+/* ===== ROOT LAYOUT ===== */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: rgb(0, 0, 0);
+  font-family: sans-serif;
+  color: #ffffff;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ===== PHASE 1: START SCREEN LAYOUT ===== */
+.start-screen.full-screen {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(0, 0, 0);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.centered-rock-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.left-panel {
+  width: 30%;
+  max-width: 300px;
+  margin-left: 2rem;
 }
 
-.card {
-  padding: 2em;
+/* ===== CENTERED ROCK BUTTON ===== */
+.rock-button {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.read-the-docs {
-  color: #888;
+.rock-icon {
+  position: relative;
+  width: 100px;
+  height: 100px;
 }
 
+.rock-icon span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  font-size: 5rem;
+  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+  opacity: 1;
+}
+
+.rock-left,
+.rock-right {
+  opacity: 0;
+}
+
+.rock-icon .rock-left {
+  opacity: 1; /* Show only left by default */
+}
+
+.rock-text {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  color: #333;
+}
+
+.rock-feedback::before {
+  content: '';
+}
+
+.rock-feedback:contains("No rock found") {
+  color: #ff5252;
+}
+
+/* ===== MAIN GAME LAYOUT (post-phase-1) ===== */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-.discovery-bar {
-  width: 100%;
-  padding: 0rem 0rem 0rem 0rem;
-  background-color: #2c2c2c;
-  border-bottom: 1px solid #444;
-  margin: .5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  font-size: 1.5rem; /* icon size */
-}
-
-.tech-icon {
-  display: inline-block;
-  cursor: default;
-}
-
-.main-layout {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem; /* space between columns */
-  align-items: flex-start; /* so tall columns don't stretch shorter ones */
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* space between stacked panels in column */
-}
-
-.panel {
-  background-color: #1e1e1e;
-  border: 1px solid #444;
-  padding: 1rem;
-  border-radius: 0.5rem;
 }
 
 .discovery-bar-wrapper {
@@ -97,6 +96,47 @@
   box-sizing: border-box;
 }
 
+.discovery-bar {
+  width: 100%;
+  padding: 0rem;
+  background-color: #2c2c2c;
+  border-bottom: 1px solid #444;
+  margin: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 1.5rem;
+}
+
+.tech-icon {
+  display: inline-block;
+  cursor: default;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel {
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  color: white;
+}
+
+/* ===== DATA PANEL ===== */
 .data-toggle-button {
   position: fixed;
   top: 1rem;
@@ -110,7 +150,7 @@
   cursor: pointer;
 }
 
-.data-panel {
+.data-panel-slide.open {
   position: fixed;
   top: 0;
   right: 0;
@@ -121,21 +161,20 @@
   padding: 1rem;
   z-index: 1000;
   overflow-y: auto;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
   text-align: left;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
 }
 
-.data-panel h2 {
+.data-panel-slide h2 {
   margin-bottom: 1rem;
-  text-align: left; /* ⬅️ Make sure header aligns too */
 }
 
-.data-panel ul {
-  padding-left: 1.2rem; /* ⬅️ Indent bullet list */
+.data-panel-slide ul {
+  padding-left: 1.2rem;
   list-style-type: disc;
 }
 
-.data-panel ul ul {
+.data-panel-slide ul ul {
   list-style-type: circle;
   margin-left: 1rem;
 }
@@ -150,4 +189,3 @@
   color: #fff;
   cursor: pointer;
 }
-

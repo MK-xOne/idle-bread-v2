@@ -2,6 +2,9 @@ import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
 
 export interface GameState {
+  hasClickedFirstRock: boolean;
+  setHasClickedFirstRock: React.Dispatch<React.SetStateAction<boolean>>;
+
   resources: Record<ResourceID, number>;
   setResources: React.Dispatch<React.SetStateAction<Record<ResourceID, number>>>;
 

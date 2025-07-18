@@ -15,17 +15,32 @@ export interface Modifiers {
   };
 }
 
-export type ResourceInteractionType = 'harvested' | 'eaten' | 'planted' | 'grown' | 'grinded' | 'baked';
+export type ResourceInteractionType = 'harvest' | 'eat' | 'plant' | 'grind' | 'bake' | 'feast';
+
+export type InteractionStats = {
+  attempted: number;
+  success: number;
+  failed: number;
+  gained: number;
+};
 
 export type InteractionTracker = {
-  __ticks?: number;
-} & {
-  [resourceId in ResourceID]?: {
-    [action in ResourceInteractionType]?: number;
+  [resourceId: string]: {
+    [actionType in ResourceInteractionType]?: InteractionStats;
   };
+} & {
+  __ticks?: number;
 };
 
 export interface GameContextType {
+
+  // Start of the Game
+  hasClickedFirstRock: boolean;
+  setHasClickedFirstRock: React.Dispatch<React.SetStateAction<boolean>>;
+  
+  lastGained: Partial<Record<ResourceID, number>>;
+  setLastGained: React.Dispatch<React.SetStateAction<Partial<Record<ResourceID, number>>>>;
+
   // 🔄 Resources
   resources: Record<ResourceID, number>;
   setResources: React.Dispatch<React.SetStateAction<Record<ResourceID, number>>>;

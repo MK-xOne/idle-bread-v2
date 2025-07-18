@@ -13,8 +13,12 @@ import type { ActionType } from '../data/actionData';
 import { actionRules } from '../data/actionRules';
 import { actionLabels } from '../data/actionData'; // if not already present
 import { advanceTick } from '../data/tracking';
+import { trackInteraction } from '../data/tracking';
 
-export const GameProvider = ({ children }: { children: ReactNode }) => {
+
+export const GameProvider = ({ children }: { children: ReactNode }) => { 
+  const [hasClickedFirstRock, setHasClickedFirstRock] = useState(false);
+
   const [resources, setResources] = useState<Record<ResourceID, number>>({
     wildWheat: 0,
     primitiveWheat: 0,
@@ -24,7 +28,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     rocks: 0,
   });
 
-  const [resourceInteractions, setResourceInteractions] = useState<InteractionTracker>({} as InteractionTracker);
+const [resourceInteractions, setResourceInteractions] = useState<InteractionTracker>({});
   const [hunger, setHunger] = useState(100);
 
   const [modifiersState, _setModifiers] = useState<Modifiers>({
@@ -51,7 +55,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [unlockedActions, setUnlockedActions] = useState<Set<string>>(
     new Set(["harvest_wildWheat", "eat_wildWheat", "harvest_rocks"])
   );
-
+  
+  const [lastGained, setLastGained] = useState<Partial<Record<ResourceID, number>>>({});
   const [plantedAtTick, setPlantedAtTick] = useState<number | null>(null);
   const getTick = () => resourceInteractions.__ticks ?? 0;
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
@@ -63,6 +68,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [bakeClicks, setBakeClicks] = useState(0);
 
   const gameState = {
+    hasClickedFirstRock,
+    setHasClickedFirstRock,
     maxResourceBonuses,
     setMaxResourceBonuses,
     resourceInteractions,
@@ -130,28 +137,54 @@ const unlockTech = (techId: TechID) => {
     }
   };
 
-
   return (
     <GameContext.Provider
       value={{
         ...gameState,
-        unlockTech,    
-                  
+        hasClickedFirstRock,
+        setHasClickedFirstRock,
+        lastGained, // <-- expose in context
+        setLastGained, // <-- expose in context
+
         performNamedAction: (id: string) => {
           if (!id.includes('_')) return;
+
           const [actionTypeRaw, resourceId] = id.split('_');
           if (!actionTypeRaw || !resourceId || !(actionTypeRaw in actionLabels)) return;
 
           const resId = resourceId as ResourceID;
           const actionType = actionTypeRaw as ActionType;
           const rule = actionRules[actionType];
+
+          const beforeAmount = gameState.resources[resId] ?? 0;
           const result = doNamedAction(gameState, resId, actionType);
+          const afterAmount = gameState.resources[resId] ?? 0;
+          const gainedAmount = afterAmount - beforeAmount;
+
+          // Track only if action was performed
           if (result.performed) {
-          advanceTick(setResourceInteractions);
-          Object.values(actionRules).forEach(rule => {
-            rule.onTick?.(gameState);
-          });
+            advanceTick(setResourceInteractions);
+            trackInteraction(setResourceInteractions, resId, actionType, {
+              success: 1,
+              gained: gainedAmount,
+            });
+
+            // Track gain for UI feedback
+            setLastGained(prev => ({
+              ...prev,
+              [resId]: gainedAmount,
+            }));
+
+            Object.values(actionRules).forEach(rule => {
+              rule.onTick?.(gameState);
+            });
+          } else {
+            trackInteraction(setResourceInteractions, resId, actionType, {
+              attempted: 1,
+              failed: 1,
+            });
           }
+
           const hungerCost = actionLabels[actionType]?.hungerCost ?? 0;
           const applyHungerCost = (cost: number) => {
             if (cost > 0) {
@@ -160,17 +193,40 @@ const unlockTech = (techId: TechID) => {
           };
 
           if (result.performed) applyHungerCost(hungerCost);
+
+          // Handle chained actions
           if (result.performed && rule?.chain) {
             rule.chain.forEach(chain => {
               const allowed = (chain.conditions ?? []).every(fn =>
-                fn({ resource: resId, action: actionType, state: gameState})
+                fn({ resource: resId, action: actionType, state: gameState })
               );
-              if (allowed) {
-              const chainedRule = actionRules[chain.action];
-              const chainedResult = doNamedAction(gameState, chain.target, chain.action);
-              const chainedHungerCost = actionLabels[chain.action]?.hungerCost ?? 0;
 
-              if (chainedResult.performed) applyHungerCost(chainedHungerCost);
+              if (allowed) {
+                const chainedRule = actionRules[chain.action];
+                const beforeChain = gameState.resources[chain.target] ?? 0;
+
+                const chainedResult = doNamedAction(gameState, chain.target, chain.action);
+                const afterChain = gameState.resources[chain.target] ?? 0;
+                const chainedGained = afterChain - beforeChain;
+
+                if (chainedResult.performed) {
+                  trackInteraction(setResourceInteractions, chain.target, chain.action, {
+                    success: 1,
+                    gained: chainedGained,
+                  });
+                  setLastGained(prev => ({
+                    ...prev,
+                    [chain.target]: chainedGained,
+                  }));
+
+                  const chainedHungerCost = actionLabels[chain.action]?.hungerCost ?? 0;
+                  applyHungerCost(chainedHungerCost);
+                } else {
+                  trackInteraction(setResourceInteractions, chain.target, chain.action, {
+                    attempted: 1,
+                    failed: 1,
+                  });
+                }
               }
             });
           }
@@ -179,6 +235,7 @@ const unlockTech = (techId: TechID) => {
     >
       {children}
     </GameContext.Provider>
+
   );
 };
 

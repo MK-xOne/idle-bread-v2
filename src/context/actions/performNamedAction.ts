@@ -5,6 +5,7 @@ import { actionLabels } from '../../data/actionData';
 import type { ActionType } from '../types'; // make sure this exists
 import { actionRules } from '../../data/actionRules';
 import type { ResourceID } from '../../data/resources';
+import { trackInteraction } from '../../data/tracking';
 
 /**
  * Executes a named action (like 'harvest', 'eat', 'grind') for a specific resource.
@@ -23,40 +24,52 @@ export const performNamedAction = (
   sourceContext?: { source: ResourceID; sourceAction: ActionType }
 ): ActionResult => {
   const resource = resources[resourceId];
-  const rule = actionRules[action]; // ✅ define once
+  const rule = actionRules[action];
 
-  console.log(`[performNamedAction] called with:`, { resourceId, action });
+  const beforeAmount = state.resources[resourceId] ?? 0;
 
-  // ❌ Block if starving and rule says to prevent
+  // ✅ Track attempt
+  trackInteraction(state.setTracker, resourceId, action, { attempted: 1 });
+
   if (rule?.blockWhenStarving && state.hunger <= 0) {
     console.warn(`[performNamedAction] Blocked '${action}' due to 0 hunger`);
     return { performed: false, affectsHunger: false };
   }
 
-  // ❌ Block if conditions aren't met
   const isAllowed = rule?.conditions?.every(cond =>
     cond({ resource: resourceId, action, state })
   ) ?? true;
 
   if (!isAllowed) {
     console.warn(`[performNamedAction] Blocked '${action}' due to failing conditions`);
+    trackInteraction(state.setTracker, resourceId, action, { failed: 1 });
     return { performed: false, affectsHunger: false };
   }
 
-  // ❌ No action function found
   if (!resource?.actions || typeof resource.actions[action] !== 'function') {
     console.warn(`[performNamedAction] Action '${action}' not found for resource '${resourceId}'`);
+    trackInteraction(state.setTracker, resourceId, action, { failed: 1 });
     return { performed: false };
   }
 
-  // ✅ Perform action
   const wasPerformed = (resource.actions[action] as (state: GameState) => boolean)(state);
+  const afterAmount = state.resources[resourceId] ?? 0;
+
+  const gained = Math.max(0, afterAmount - beforeAmount);
+
+  if (wasPerformed) {
+    trackInteraction(state.setTracker, resourceId, action, {
+      success: 1,
+      gained,
+    });
+  } else {
+    trackInteraction(state.setTracker, resourceId, action, { failed: 1 });
+  }
 
   const hungerCost = actionLabels[action]?.hungerCost ?? 0;
   const affectsHunger = (rule?.alwaysConsumesHunger || wasPerformed) && hungerCost > 0;
 
   return { performed: wasPerformed, affectsHunger };
 };
-
 
 
