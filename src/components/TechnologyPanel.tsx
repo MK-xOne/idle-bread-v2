@@ -13,7 +13,7 @@ export const TechnologyPanel = () => {
 
   const canAfford = (cost: Partial<Record<string, number>>) => {
     return Object.entries(cost).every(
-      ([key, amount]) => (resources as any)[key] >= amount
+      ([key, amount]) => amount !== undefined && (resources as any)[key] >= amount
     );
   };
 

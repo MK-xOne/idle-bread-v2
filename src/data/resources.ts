@@ -1,8 +1,5 @@
 import type { GameState } from "../context/types";
-import { mechanics, type ActionType } from "./actionData";
-
-const getRandomInRange = ([min, max]: [number, number]) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+import { mechanics } from "./actionData";
 
 export type ResourceID =
   | "rocks"

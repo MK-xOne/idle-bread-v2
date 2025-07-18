@@ -1,10 +1,10 @@
 import type { ResourceID } from './resources';
-import { effectModifiers } from "./effectModifiers";
 
 export type TechID = 
   | 'discoverFire'
   | 'stoneTools'
   | 'unlockPlanting'
+  | 'seedForaging'
   | 'unlockFeast'
   | 'primitiveFeast'
   | 'unlockWheel'
@@ -67,15 +67,15 @@ export const techTree: Record<TechID, Tech> = {
   },
 
   pottery: {
-  id: 'pottery',
-  name: 'Pottery',
-  description: 'Craft durable containers to store more.',
-  icon: '🏺',
-  cost: { rocks: 25 },
-  requires: ['discoverFire', 'stoneTools'], // ✅ Fire + Stone Tools
-  unlocks: {
-    effects: [
-      {
+    id: 'pottery',
+    name: 'Pottery',
+    description: 'Craft durable containers to store more.',
+    icon: '🏺',
+    cost: { rocks: 25 },
+    requires: ['discoverFire', 'stoneTools'], // ✅ Fire + Stone Tools
+    unlocks: {
+      effects: [
+        {
         type: 'MaxInventoryBonus',
         resource: 'all',
         amount: 100,
@@ -83,7 +83,6 @@ export const techTree: Record<TechID, Tech> = {
     ],
   },
 },
-
 
   unlockPlanting: {
     id: 'unlockPlanting',
@@ -94,9 +93,21 @@ export const techTree: Record<TechID, Tech> = {
     requires: ["stoneTools"],
     unlocks: {
       resources: ['primitiveWheat'],
-      actions: ['plant_primitiveWheat', 'grow_primitiveWheat', 'harvest_primitiveWheat'],
+      actions: ['plant_primitiveWheat', 'grow_primitiveWheat', 'harvest_primitiveWheat', 'seedForaging'],
     },
   },
+
+seedForaging: {
+  id: 'seedForaging', 
+  name: "Seed Foraging",
+  icon: '🌰',
+  description: "Allows direct harvesting of seeds from the environment.",
+  cost: { wildWheat: 10 },
+  requires: ["unlockPlanting"],
+  unlocks: {
+    actions: ['harvest_seeds'],
+  }
+},
 
   unlockFeast: {
     id: 'unlockFeast',

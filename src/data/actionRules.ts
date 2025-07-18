@@ -17,18 +17,6 @@ export interface ActionRule {
   blockWhenStarving?: boolean;
 }
 
-// ✅ Internal helper to avoid copy-pasting
-const hasRoomFor = (resource: ResourceID, state: GameState): boolean => {
-  const current = state.resources[resource];
-  const baseMax = resources[resource]?.maxAmount ?? 100;
-  const bonus = state.maxResourceBonuses?.[resource] ?? 0;
-  return current < (baseMax + bonus);
-};
-
-const hasAnyOf = (resource: ResourceID, state: GameState): boolean => {
-  return state.resources[resource] > 0;
-};
-
 export const actionRules: Partial<Record<ActionType, ActionRule>> = {
   harvest: {
     blockWhenStarving: true,

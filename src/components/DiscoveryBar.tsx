@@ -4,7 +4,10 @@ import { GameContext } from '../context/GameContext';
 
 
 const DiscoveryBar = () => {
-  const { unlockedTechs } = useContext(GameContext);
+  const context = useContext(GameContext);
+  if (!context) return null;
+
+  const { unlockedTechs } = context;
   return (
 
     <div className="discovery-bar">
