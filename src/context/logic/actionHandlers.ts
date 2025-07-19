@@ -3,7 +3,7 @@
 import { actionRules } from '../rules/actionRules';
 import type { ActionType } from '../../data/actionData';
 import type { ResourceID } from '../../data/resources';
-import type { GameStateHook } from '../types';
+import type { GameStateHook } from '../gameState';
 import type { ActionResult } from '../actions/performNamedAction';
 
 /**

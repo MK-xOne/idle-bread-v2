@@ -37,7 +37,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         ...gameState,
         perform,
         performNamedAction: (resourceId, actionType) =>
-        performNamedAction(gameState, resourceId, actionType),
+        doNamedAction(gameState, resourceId, actionType),
+      
       }}
     >
       {children}

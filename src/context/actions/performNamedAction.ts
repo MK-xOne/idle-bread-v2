@@ -1,4 +1,4 @@
-import type { GameStateHook } from '../types';
+import type { GameStateHook } from '../gameState';
 import { actionRules } from '../rules/actionRules';
 import { resources } from '../../data/resources';
 import type { ResourceID } from '../../data/resources';

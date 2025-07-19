@@ -1,5 +1,7 @@
 import type { GameState } from "../context/types";
 import { mechanics } from "./actionData";
+import type { GameStateHook } from '../context/gameState';
+
 
 /**
  * resources.ts

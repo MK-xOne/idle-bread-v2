@@ -6,12 +6,7 @@
 
 import type { GameStateHook } from '../context/gameState';
 import type { ResourceID } from '../data/resources';
-import type {
-  InteractionTracker,
-  TrackerState,
-  ResourceInteractionType,
-  InteractionStats,
-} from '../context/types';
+import type { InteractionTracker, TrackerState, ResourceInteractionType, InteractionStats,} from '../context/types';
 
 /**
  * advanceTick
@@ -47,7 +42,7 @@ export const getInteractionStats = (
   resource: ResourceID,
   action: ResourceInteractionType
 ): InteractionStats | undefined => {
-  return state.tracker.tracker[resource]?.[action];
+  return state.trackerState.tracker[resource]?.[action];
 };
 
 /**
@@ -56,5 +51,5 @@ export const getInteractionStats = (
  * Returns the number of total game ticks from tracker state.
  */
 export const getTotalTicks = (state: GameStateHook): number => {
-  return state.tracker.__ticks ?? 0;
+  return state.trackerState.__ticks ?? 0;
 };

@@ -1,4 +1,4 @@
-import { useGame } from '../context/GameProvider';
+import { useGame } from '../context/GameContext';
 import { resources as resourceMeta, type ResourceID } from "../data/resources";
 
 /**

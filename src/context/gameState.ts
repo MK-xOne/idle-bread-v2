@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
-import type { InteractionTracker, Modifiers, GameStateHook, TrackerState } from './types';
+import type { InteractionTracker, Modifiers, TrackerState } from './types';
 
 /* ---------- initial values ---------- */
 
@@ -76,6 +76,7 @@ export const useGameState = () => {
     hunger,                  setHunger,
     modifiers,               setModifiers,
     tracker,                 setResourceInteractions,
+    trackerState,            setTracker,
 
     discoveredResources,     discoverResource,
     unlockedActions,         setUnlockedActions,
