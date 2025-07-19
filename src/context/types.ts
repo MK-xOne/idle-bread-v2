@@ -26,7 +26,14 @@ export type ResourceInteractionType =
   | 'plant'
   | 'grind'
   | 'bake'
-  | 'feast';
+  | 'feast'
+  | 'grow';
+
+export interface ActionResult {
+  performed: boolean;
+  amount?: number;
+  affectsHunger?: boolean;
+}
 
 /* ---------- MODIFIER STRUCTURES ---------- */
 
@@ -45,7 +52,7 @@ export interface Modifiers {
 
 export type InteractionStats = {
   attempted: number;
-  success: number;
+  succeeded: number;
   failed: number;
   gained: number;
 };

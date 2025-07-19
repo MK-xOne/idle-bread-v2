@@ -43,3 +43,9 @@
   margin-top: 0.5rem;
   color: #ccc;
 }
+
+.animate-out {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}

@@ -7,7 +7,8 @@
 
 import type { ResourceID } from '../../data/resources';
 import { resources } from '../../data/resources';
-
+import { trackInteraction } from "../tracking/interactionTracker";
+import { advanceTick } from "../../utils/tracking";
 import type { GameStateHook } from '../../context/gameState';
 import type { ActionType } from '../../data/actionData';
 
@@ -43,19 +44,37 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
     },
 
     perform: (resourceId, state) => {
-      const range = resources[resourceId].harvestAmount ?? [1, 1];
-      const amount = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+      const baseRange = resources[resourceId].harvestAmount ?? [1, 1];
+      const modifiers = state.modifiers?.harvestBonus?.[resourceId] ?? 0;
+
+      const rawAmount = Math.floor(Math.random() * (baseRange[1] - baseRange[0] + 1)) + baseRange[0];
+      const bonus = Math.floor(rawAmount * modifiers);
+      const amount = rawAmount + bonus;
+
+      const max = resources[resourceId].maxAmount ?? 100;
 
       state.setResources(prev => ({
         ...prev,
-        [resourceId]: Math.min(
-          (prev[resourceId] ?? 0) + amount,
-          resources[resourceId].maxAmount ?? 100
-        ),
+        [resourceId]: Math.min((prev[resourceId] ?? 0) + amount, max),
       }));
 
-      return { amount, affectsHunger: true };
+      // ✅ Advance time
+      advanceTick(state);
+
+      // ✅ Track interaction
+      trackInteraction(state, resourceId, "harvest", {
+        attempted: true,
+        succeeded: true,
+        gained: amount,
+      });
+
+      return {
+        amount,
+        affectsHunger: true,
+      };
     },
+
+
 
     blockWhenStarving: true,
 

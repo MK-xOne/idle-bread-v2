@@ -3,7 +3,7 @@ import "./PageOne.css";
 import "../utils/animations.css";
 import { useGame } from "../context/GameContext";
 import { useEffect, useRef, useState } from "react";
-import type { ActionResult } from "../context/actions/performNamedAction";
+import type { ActionResult } from '../context/types'; 
 
 /**
  * PageOne.tsx
@@ -18,18 +18,31 @@ export default function PageOne() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const rocksRef = useRef(resources.rocks ?? 0);
 
+  const [previousRock, setPreviousRock] = useState(resources.rocks ?? 0);
+
   useEffect(() => {
-    rocksRef.current = resources.rocks ?? 0;
+    if (resources.rocks != null && resources.rocks > previousRock) {
+      setFeedback(`+${resources.rocks - previousRock}`);
+      setTimeout(() => setFeedback(null), 1000);
+    }
+    setPreviousRock(resources.rocks ?? 0);
   }, [resources.rocks]);
 
+
   const handleClick = () => {
+    
     const before = rocksRef.current;
-    const result: ActionResult = performNamedAction?.("rocks", "harvest") ?? { performed: false };
+    if (!performNamedAction) return;
+    const result: ActionResult = performNamedAction("rocks", "harvest");
 
     const gained = (resources.rocks ?? 0) - before;
     if (result.performed && gained > 0) {
       setFeedback(`+${gained}`);
-      setTimeout(() => setFeedback(null), 1000);
+      setFeedback(`+${gained}`);
+      setTimeout(() => {
+        document.querySelector(".rock-feedback")?.classList.add("animate-out");
+        setTimeout(() => setFeedback(null), 300);
+      }, 1000);
     }
   };
 

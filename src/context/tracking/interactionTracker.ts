@@ -7,8 +7,8 @@ import type { TrackerState, InteractionStats } from '../types';
  */
 const initStats = (): InteractionStats => ({
   attempted: 0,
-  failed: 0,
   succeeded: 0,
+  failed: 0,
   gained: 0,
 });
 
