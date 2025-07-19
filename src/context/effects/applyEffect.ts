@@ -31,7 +31,7 @@ export const applyEffect = (effect: Effect, state: GameStateHook): void => {
   switch (effect.type) {
     case 'harvestBonus': {
       const prev = state.modifiers.harvestBonus ?? {};
-      const current = prev[effect.resource] ?? {
+      const current = prev[(effect.resource as ResourceID)] ?? {
         successRateBonus: 0,
         extraYieldRange: [0, 0],
       };
@@ -48,7 +48,7 @@ export const applyEffect = (effect: Effect, state: GameStateHook): void => {
         ...prev,
         harvestBonus: {
           ...prev.harvestBonus,
-          [effect.resource]: merged,
+          [(effect.resource as ResourceID)]: merged,
         },
       }));
       break;

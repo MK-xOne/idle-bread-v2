@@ -12,8 +12,7 @@
 import { useState } from 'react';
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
-import type { Modifiers, GameStateHook, TrackerState } from './types';
-
+import type { InteractionTracker, Modifiers, GameStateHook, TrackerState } from './types';
 
 /* ---------- initial values ---------- */
 
@@ -39,7 +38,8 @@ export const useGameState = () => {
   const [resources,            setResources           ] = useState(initialResources);
   const [hunger,               setHunger              ] = useState(100);
   const [modifiers,            _setModifiers          ] = useState<Modifiers>({ harvestBonus: {} });
-  const [resourceInteractions, setResourceInteractions] = useState<InteractionTracker>({});
+  const [tracker,              setResourceInteractions] = useState<InteractionTracker>({});
+  const [trackerState,         setTracker             ] = useState<TrackerState> ({tracker: {}, __ticks:0,});
 
   /* progression / discovery */
   const [discoveredResources,  _setDiscovered         ] = useState<Set<ResourceID>>(new Set(['wildWheat', 'rocks']));
@@ -55,7 +55,6 @@ export const useGameState = () => {
   const [grindClicks,                  setGrindClicks                 ] = useState(0);
   const [bakeClicks,                   setBakeClicks                  ] = useState(0);
   const [hasClickedFirstRock,          setHasClickedFirstRock         ] = useState(false);
-  const [tracker,                      setTracker                     ] = useState<TrackerState>({tracker:{}, __ticks:0,})
 
   /* ---------- tiny helpers (logic-free) ---------- */
 
@@ -68,7 +67,7 @@ export const useGameState = () => {
     _setDiscovered(prev => (prev.has(id) ? prev : new Set(prev).add(id)));
 
   /** current global tick counter; stored in InteractionTracker */
-  const getTick = () => resourceInteractions.__ticks ?? 0;
+  const getTick = () => trackerState.__ticks;
 
   /* ---------- bundle all exports ---------- */
 
@@ -77,7 +76,7 @@ export const useGameState = () => {
     resources,               setResources,
     hunger,                  setHunger,
     modifiers,               setModifiers,
-    resourceInteractions,    setResourceInteractions,
+    tracker,                 setResourceInteractions,
 
     discoveredResources,     discoverResource,
     unlockedActions,         setUnlockedActions,

@@ -1,62 +1,56 @@
-// src/context/tracking/interactionTracker.ts
-// ------------------------------------------------------
-// Tracks player interactions with resources across actions.
-// Logs number of attempts, successes, failures, and gains.
-// Also tracks a global tick counter (__ticks).
-// ------------------------------------------------------
-
-import type { GameStateHook } from '../gameState';
-import type { ResourceID } from '../../data/resources';
 import type { ActionType } from '../../data/actionData';
-import type { ActionResult } from '../actions/performNamedAction';
-import type {
-  ResourceInteractionType,
-  InteractionStats,
-} from '../types';
+import type { ResourceID } from '../../data/resources';
+import type { TrackerState, InteractionStats } from '../types';
 
-interface InteractionContext {
-  resource: ResourceID;
-  actionType: ActionType;
-  result: ActionResult;
-  state: GameStateHook;
+/**
+ * Initializes a new interaction tracker entry for a specific resource + action.
+ */
+const initStats = (): InteractionStats => ({
+  attempted: 0,
+  failed: 0,
+  succeeded: 0,
+  gained: 0,
+});
+
+/**
+ * Ensures that a specific [resourceId][actionType] path exists in the tracker.
+ */
+function ensurePath(state: TrackerState, resourceId: ResourceID, actionType: ActionType) {
+  if (!state.tracker[resourceId]) {
+    state.tracker[resourceId] = {};
+  }
+  if (!state.tracker[resourceId]![actionType]) {
+    state.tracker[resourceId]![actionType] = initStats();
+  }
 }
 
 /**
- * trackInteraction
- * -----------------
- * Records the result of an interaction (harvest, eat, etc.)
- * against a resource and updates statistics and ticks.
+ * Increments the interaction statistics for a given action attempt.
  */
-export const trackInteraction = ({
-  resource,
-  actionType,
-  result,
-  state,
-}: InteractionContext): void => {
-  const type = actionType as ResourceInteractionType;
+export function trackInteraction(
+  state: TrackerState,
+  resourceId: ResourceID,
+  actionType: ActionType,
+  result: {
+    attempted?: boolean;
+    succeeded?: boolean;
+    failed?: boolean;
+    gained?: number;
+  }
+) {
+  ensurePath(state, resourceId, actionType);
 
-  state.setResourceInteractions(prev => {
-    const current = { ...prev };
+  const stats = state.tracker[resourceId]![actionType]!;
 
-    const resourceStats = { ...(current[resource] ?? {}) };
-    const existingStats = resourceStats[type] as InteractionStats | undefined;
+  if (result.attempted) stats.attempted += 1;
+  if (result.succeeded) stats.succeeded += 1;
+  if (result.failed) stats.failed += 1;
+  if (typeof result.gained === 'number') stats.gained += result.gained;
+}
 
-    const updatedStats: InteractionStats = {
-      attempted: (existingStats?.attempted ?? 0) + 1,
-      success: (existingStats?.success ?? 0) + (result.performed ? 1 : 0),
-      failed: (existingStats?.failed ?? 0) + (result.performed ? 0 : 1),
-      gained: (existingStats?.gained ?? 0) + (result.amount ?? 0),
-    };
-
-    current[resource] = {
-      ...resourceStats,
-      [type]: updatedStats,
-    };
-
-    // ✅ Safe tick increment even if __ticks is misinferred
-    const currentTicks = typeof current.__ticks === 'number' ? current.__ticks : 0;
-    current.__ticks = currentTicks + 1;
-
-    return current;
-  });
-};
+/**
+ * Advances the global tick count.
+ */
+export function advanceTick(state: TrackerState) {
+  state.__ticks += 1;
+}

@@ -1,44 +1,42 @@
 // src/context/GameProvider.tsx
+// --------------------------------------------------
+// Main state provider that wraps the app and exposes
+// game logic via GameContext.
+// --------------------------------------------------
 
-import type { ReactNode } from 'react';
-import { GameContext } from './GameContext';
-
-import { useGameState } from './gameState';
-import { performAction } from './actions/performAction';
-import { performNamedAction as doNamedAction } from './actions/performNamedAction';
-
-import type { ResourceID } from '../data/resources';
-import type { ActionType } from '../data/actionData';
-import type { ActionResult } from './actions/performNamedAction';
+import { GameContext } from "./GameContext";
+import type { ReactNode } from "react";
+import { useGameState } from "./gameState";
+import { performAction } from "./actions/performAction";
+import { performNamedAction as doNamedAction } from "./actions/performNamedAction";
+import { actionLabels } from "../data/actionData";
 
 /**
- * GameProvider.tsx
- * ------------------
- * Provides the global game context with state and logic bindings.
- * All state lives in `gameState.ts`.
- * All logic lives in `actions/`, `effects/`, and `rules/`.
+ * GameProvider
+ * ---------------------
+ * Wraps the app with game logic and state.
  */
-
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const gameState = useGameState();
+
+  // Performs a generic action
+  const perform = (fn: (state: typeof gameState) => void) => {
+    performAction(fn, gameState);
+  };
+
+  // Wrapper for performing a named action (e.g., 'harvest' wildWheat)
+  const performNamedAction = (resourceId: string, action: string) => {
+    const resId = resourceId as keyof typeof gameState.resources;
+    const act = action as keyof typeof actionLabels;
+    return doNamedAction(gameState, resId, act);
+  };
 
   return (
     <GameContext.Provider
       value={{
         ...gameState,
-
-        // ✅ precise signature: passes gameState to the logic function
-        performAction: (fn: (state: typeof gameState) => void): void => {
-          performAction(fn, gameState);
-        },
-
-        // ✅ returns ActionResult instead of forcing boolean
-        performNamedAction: (
-          resourceId: ResourceID,
-          actionType: ActionType
-        ): ActionResult => {
-          return doNamedAction(gameState, resourceId, actionType);
-        },
+        perform,
+        performNamedAction,
       }}
     >
       {children}

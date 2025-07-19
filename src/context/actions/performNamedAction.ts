@@ -1,26 +1,10 @@
-// src/context/actions/performNamedAction.ts
-// ------------------------------------------------------
-// Executes a named action (e.g. 'harvest', 'eat') on a resource.
-// Pulls the rule from actionRules and applies its logic.
-// ------------------------------------------------------
-
-import type { GameStateHook } from '../gameState';
+import type { GameStateHook } from '../types';
+import { actionRules } from '../rules/actionRules';
+import { resources } from '../../data/resources';
 import type { ResourceID } from '../../data/resources';
 import type { ActionType } from '../../data/actionData';
-import { resources } from '../../data/resources';
-import { actionRules } from '../rules/actionRules';
+import type { ActionResult } from './performNamedAction';
 
-export type ActionResult = {
-  performed: boolean;
-  amount?: number;          // amount gained or consumed
-  affectsHunger?: boolean;  // whether hunger should decrease
-};
-
-/**
- * performNamedAction
- * ------------------
- * Dispatches the correct rule logic for a given (resource, action).
- */
 export const performNamedAction = (
   state: GameStateHook,
   resourceId: ResourceID,
@@ -34,15 +18,20 @@ export const performNamedAction = (
     return { performed: false };
   }
 
+  // ✅ Proper call to optional canPerform function inside the rule object
   const canPerform = rule.canPerform?.(resourceId, state) ?? true;
   if (!canPerform) {
     return { performed: false };
   }
 
-  // Execute the core mechanic (e.g., harvest, eat)
+  // ✅ Call the rule's perform method correctly
+  if (typeof rule.perform !== "function") {
+    console.warn(`[performNamedAction] No perform function defined for ${action}_${resourceId}`);
+    return { performed: false };
+  }
+
   const result = rule.perform(resourceId, state);
 
-  // Ensure it returns something meaningful
   if (!result || typeof result !== 'object') {
     return { performed: true };
   }
