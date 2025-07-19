@@ -2,6 +2,22 @@ import React, { useState } from 'react';
 import { useGame } from '../context/GameProvider';
 import type { ResourceID } from '../data/resources';
 
+/**
+ * DataPanel Component
+ * --------------------
+ * Displays real-time gameplay statistics related to resource interactions.
+ * Fetches interaction data from the game context and renders a detailed
+ * breakdown by resource and action (e.g., harvest, plant, eat).
+ * 
+ * Includes a close button for user-controlled visibility and is wrapped
+ * in a toggleable panel component (`DataPanelWrapper`) to allow it to
+ * slide in and out of view.
+ * 
+ * This component is primarily used for debugging, playtesting, or offering
+ * players deeper insight into their gameplay behavior.
+ */
+
+
 const DataPanel = ({ onClose }: { onClose: () => void }) => {
   const { resourceInteractions } = useGame();
 

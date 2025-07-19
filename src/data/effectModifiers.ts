@@ -1,6 +1,23 @@
 import type { GameState } from "../context/types";
 import type { ResourceID } from "./resources";
 
+/**
+ * effectModifiers.ts
+ * --------------------
+ * Defines and applies gameplay effects that modify player state or mechanics.
+ * 
+ * Supported effect types:
+ * - `harvestBonus`: Improves success rate and yield range for harvesting specific resources
+ * - `MaxInventoryBonus`: Increases inventory cap for one or all resource types
+ * 
+ * Core method:
+ * - `applyEffect`: Mutates the current game state by applying the effect logic,
+ *   merging additive bonuses into the `modifiers` field of GameState.
+ * 
+ * This system provides a flexible way to apply upgrades, tech unlocks,
+ * or item effects without hardcoding logic into core systems.
+ */
+
 type HarvestBonusEffect = {
   type: 'harvestBonus';
   resource: string;

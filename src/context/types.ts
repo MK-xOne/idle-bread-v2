@@ -2,6 +2,23 @@ import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
 import { actionLabels } from '../data/actionData';
 
+/**
+ * types.ts
+ * ----------
+ * Centralized type definitions for the game's context, actions, modifiers,
+ * and interaction tracking systems.
+ * 
+ * Includes:
+ * - `ActionType`: Enum of possible action names
+ * - `Modifiers`: Structures for gameplay modifiers like harvest bonuses
+ * - `InteractionTracker`: Schema for logging and analyzing player interactions
+ * - `GameContextType`: Complete contract for the GameContext provider,
+ *   specifying all exposed state variables and updater functions
+ * 
+ * This file ensures strong type safety across the game architecture and
+ * enforces consistency between components, data systems, and UI.
+ */
+
 export type ActionType = keyof typeof actionLabels;
 
 export interface HarvestBonus {

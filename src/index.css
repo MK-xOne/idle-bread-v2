@@ -1,3 +1,18 @@
+/**
+ * index.css
+ * ------------
+ * Global CSS reset and base styles for consistent rendering across browsers.
+ * 
+ * Includes:
+ * - Root font and color variables
+ * - Default styles for common elements (body, h1, a, button)
+ * - Light/dark theme handling via `prefers-color-scheme` media query
+ * - Accessibility enhancements (e.g. font smoothing, focus styles)
+ * 
+ * This file serves as the baseline stylesheet loaded at app startup,
+ * ensuring visual consistency and responsive behavior before component-specific styles apply.
+ */
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

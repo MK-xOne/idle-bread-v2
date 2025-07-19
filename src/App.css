@@ -1,3 +1,19 @@
+/**
+ * App.css
+ * ---------
+ * Defines the global layout and visual styling for the game's main interface.
+ * 
+ * Includes styles for:
+ * - Root and fullscreen layout setup (`#root`, `.start-screen`)
+ * - Rock interaction UI (e.g., `.rock-button`, `.rock-icon`, `.rock-feedback`)
+ * - Panel-based layout structure (e.g., `.panel`, `.left-panel`, `.column`)
+ * - Technology and discovery UI (e.g., `.discovery-bar`, `.tech-icon`)
+ * - Sliding data panel and close button styling
+ * 
+ * This stylesheet ensures visual consistency and responsive layout behavior
+ * across all game phases, from the intro screen to advanced gameplay views.
+ */
+
 /* ===== ROOT LAYOUT ===== */
 #root {
   margin: 0;

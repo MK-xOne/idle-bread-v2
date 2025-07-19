@@ -15,6 +15,21 @@ import { actionLabels } from '../data/actionData'; // if not already present
 import { advanceTick } from '../data/tracking';
 import { trackInteraction } from '../data/tracking';
 
+/**
+ * GameProvider.tsx
+ * ------------------
+ * Main state manager for the game. Implements and provides all global
+ * state values and update functions via the `GameContext`.
+ * 
+ * Responsibilities:
+ * - Tracks core gameplay state (resources, hunger, unlocked techs/actions, etc.)
+ * - Manages resource interactions, progression mechanics, and effect modifiers
+ * - Integrates declarative logic from `actionRules`, `techTree`, and `effectModifiers`
+ * - Provides `performAction` and `performNamedAction` wrappers to enforce game rules
+ * 
+ * Serves as the single source of truth for all dynamic game data and behaviors.
+ * Wraps the application with context to expose consistent state access across components.
+ */
 
 export const GameProvider = ({ children }: { children: ReactNode }) => { 
   const [hasClickedFirstRock, setHasClickedFirstRock] = useState(false);

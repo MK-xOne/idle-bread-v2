@@ -1,6 +1,22 @@
 import type { InteractionTracker, ResourceInteractionType } from '../context/types';
 import type { ResourceID } from "./resources";
 
+/**
+ * tracking.ts
+ * -------------
+ * Manages runtime tracking of player interactions and game ticks.
+ * 
+ * Includes:
+ * - `trackInteraction`: Logs detailed stats (attempted, success, failed, gained)
+ *   for specific actions performed on resources. Used to generate analytics,
+ *   gameplay insights, or visual feedback in panels like `DataPanel`.
+ * 
+ * - `advanceTick`: Increments the internal tick counter used for time-based logic,
+ *   growth mechanics, and progression pacing.
+ * 
+ * This system supports lightweight telemetry for balancing and debugging while
+ * remaining decoupled from core action execution logic.
+ */
 
 export function trackInteraction(
   setTracker: React.Dispatch<React.SetStateAction<InteractionTracker>>,

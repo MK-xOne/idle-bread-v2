@@ -2,6 +2,22 @@ import { useGame } from '../context/GameProvider';
 import { resources } from '../data/resources';
 import { actionLabels } from '../data/actionData';
 
+/**
+ * ActionPanel Component
+ * ---------------------
+ * This component dynamically renders action buttons for each resource
+ * based on the player's current unlocks. It uses the game context to
+ * determine which actions are available, filters out actions like
+ * 'eat' and 'feast' (handled elsewhere), and applies conditional logic 
+ * (e.g., for primitive wheat growth stages).
+ * 
+ * Clicking an action triggers its corresponding effect via performNamedAction.
+ * 
+ * This panel is the main interactive interface for progressing through
+ * resource mechanics such as harvesting, planting, grinding, and baking.
+ */
+
+
 export const ActionPanel = () => {
   const game = useGame(); // ✅ Hook inside component
   const {

@@ -1,6 +1,22 @@
 import type { GameState } from "../context/types";
 import { mechanics } from "./actionData";
 
+/**
+ * resources.ts
+ * --------------
+ * Defines the static metadata for all resource types in the game.
+ * 
+ * Each resource entry includes:
+ * - Identity and appearance (id, name, icon, description)
+ * - Gameplay properties (edibility, hunger values, inventory caps)
+ * - Harvest parameters (amount range, success rate)
+ * - Supported actions and their bound logic functions
+ * 
+ * This file acts as a centralized registry for resource definitions,
+ * enabling the UI and systems to reference consistent, structured
+ * data across the game loop.
+ */
+
 export type ResourceID =
   | "rocks"
   | "wildWheat"

@@ -1,6 +1,21 @@
 import type { GameState } from '../types';
 import { mechanics } from '../../data/actionData';
 
+/**
+ * performAction Utility
+ * ----------------------
+ * A centralized executor for game actions that:
+ * 1. Prevents execution if the player is starving (unless explicitly allowed)
+ * 2. Runs the provided action logic via callback
+ * 3. Triggers passive game mechanics (e.g., plant growth)
+ * 4. Deducts 1 hunger point by default
+ * 
+ * This wrapper ensures consistent application of core gameplay rules
+ * and allows options (e.g., allowWhenStarving) to override constraints
+ * in controlled scenarios like feasting.
+ */
+
+
 export const performAction = (
   callback: () => void,
   state: GameState,

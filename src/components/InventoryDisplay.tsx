@@ -1,6 +1,21 @@
 import { useGame } from '../context/GameProvider';
 import { resources as resourceMeta, type ResourceID } from "../data/resources";
 
+/**
+ * InventoryDisplay Component
+ * ---------------------------
+ * Renders a grid-based visual of the player's discovered resources and their quantities.
+ * Pulls resource data from the game context and formats it with dynamic max capacity
+ * (including any bonuses). Only resources the player has discovered are shown.
+ * 
+ * Each resource is displayed with its current amount, and optionally its max limit,
+ * giving players a real-time understanding of their inventory state.
+ * 
+ * Aesthetic formatting and dynamic grid layout help adapt the display to
+ * different screen sizes and resource counts.
+ */
+
+
 const formatLabel = (id: string) =>
   id
     .replace(/([A-Z])/g, ' $1')

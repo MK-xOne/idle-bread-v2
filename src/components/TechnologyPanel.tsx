@@ -1,6 +1,21 @@
 import { useGame } from '../context/GameProvider';
 import { techTree, isTechDiscoverable } from '../data/tech';
 
+/**
+ * TechnologyPanel Component
+ * --------------------------
+ * Displays all available technologies from the `techTree` and allows
+ * players to unlock them when they meet the resource requirements.
+ * 
+ * Integrates with game state to check affordability, deduct resources,
+ * and trigger unlock logic via `unlockTech`. Prevents unlocking if
+ * requirements aren't met.
+ * 
+ * This panel is central to progression and unlock mechanics, enabling
+ * players to expand capabilities, access new actions, and evolve
+ * through different ages or stages of the game.
+ */
+
 export const TechnologyPanel = () => {
   const {
     unlockedTechs,

@@ -1,6 +1,17 @@
 import React from 'react';
 import { useGame } from '../context/GameProvider';
 
+/**
+ * HungerBar Component
+ * --------------------
+ * Displays the player's current hunger level as a horizontal progress bar.
+ * Pulls hunger value from the game context and uses color-coding:
+ * green for healthy (>25) and red for low hunger (≤25).
+ * 
+ * Visually reinforces the importance of food and consumption mechanics
+ * in the gameplay loop. Smooth transition effects enhance UI responsiveness.
+ */
+
 export function HungerBar() {
   const { hunger } = useGame();
 

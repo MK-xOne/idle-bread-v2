@@ -1,3 +1,16 @@
+/**
+ * animations.css
+ * ----------------
+ * Contains reusable CSS animations and transitions for enhancing UI feedback.
+ * 
+ * Included animations:
+ * - `.split .rock-left / .rock-right`: Visual split effect for rock-breaking interactions
+ * - `.rock-feedback`: Floating, fading popup animation used to show harvest feedback
+ * - `@keyframes popFade`: Defines the float-and-fade animation used in feedback UI
+ * 
+ * These animations improve clarity and responsiveness during key player actions.
+ */
+
 /* ===== ROCK SPLIT ANIMATION ===== */
 .split .rock-left {
   transform: translateX(-60px) rotate(-20deg);

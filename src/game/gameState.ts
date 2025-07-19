@@ -1,6 +1,22 @@
 import type { ResourceID } from '../data/resources';
 import type { TechID } from '../data/tech';
 
+/**
+ * gameState.ts
+ * ----------------
+ * Defines the shape and update mechanisms of the core game state interface.
+ * 
+ * The `GameState` interface provides a fully typed contract for:
+ * - Resource management
+ * - Technology progression
+ * - Hunger tracking
+ * - Growth and interaction logic (e.g. primitive wheat)
+ * - UI-related flags and click counters (e.g. grind, bake)
+ * 
+ * This type is used by the `GameProvider` to enforce consistent, reactive
+ * state updates across the game loop and UI rendering.
+ */
+
 export interface GameState {
   hasClickedFirstRock: boolean;
   setHasClickedFirstRock: React.Dispatch<React.SetStateAction<boolean>>;

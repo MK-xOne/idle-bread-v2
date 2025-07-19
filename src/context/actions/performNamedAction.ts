@@ -8,8 +8,18 @@ import type { ResourceID } from '../../data/resources';
 import { trackInteraction } from '../../data/tracking';
 
 /**
- * Executes a named action (like 'harvest', 'eat', 'grind') for a specific resource.
- * Returns true if the action function exists and ran, false otherwise.
+ * performNamedAction.ts
+ * -----------------------
+ * Executes a specific action (e.g. 'harvest', 'eat', 'grind') tied to a resource.
+ * 
+ * This function:
+ * - Looks up the action rule from `actionRules`
+ * - Validates and runs the rule’s logic for the given resource
+ * - Tracks interactions for analytics/stats
+ * - Returns whether the action was performed and if it should affect hunger
+ * 
+ * Serves as the core dispatcher for dynamic, resource-specific actions
+ * based on player input or automated game flow.
  */
 
 export type ActionResult = {

@@ -5,6 +5,21 @@ import { InventoryDisplay } from './components/InventoryDisplay';
 import { useAnimation } from './utils/Animations';
 import './utils/animations.css';
 
+/**
+ * App.tsx
+ * ----------
+ * Entry component for the game's initial interaction phase ("Phase 1").
+ * 
+ * Responsibilities:
+ * - Renders the fullscreen rock-breaking screen used to kick off the game
+ * - Plays sound and animation on first rock click, guarantees resource gain
+ * - Tracks first interaction to transition from intro to main gameplay
+ * - Integrates core UI components like `InventoryDisplay` and visual feedback
+ * 
+ * This file defines the first layer of interaction and serves as the onboarding
+ * moment before more advanced systems are revealed.
+ */
+
 function App() {
   const { resources, setResources, performNamedAction } = useGame();
   const [firstPickDone, setHasClickedFirstRock] = useState(false);

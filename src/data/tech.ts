@@ -1,5 +1,21 @@
 import type { ResourceID } from './resources';
 
+/**
+ * tech.ts
+ * ----------
+ * Defines the full structure and content of the game's technology tree.
+ * 
+ * Each technology entry includes:
+ * - Identity and presentation (id, name, icon, description)
+ * - Unlock cost (resource requirements)
+ * - Prerequisites (tech dependencies)
+ * - Unlock effects (resources, actions, sub-techs, and gameplay effects)
+ * 
+ * The `techTree` enables progressive gameplay through staged discovery,
+ * and serves as the authoritative source for the TechnologyPanel and
+ * unlock logic throughout the game.
+ */
+
 export type TechID = 
   | 'discoverFire'
   | 'stoneTools'

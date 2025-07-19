@@ -4,6 +4,22 @@ import { resources } from './resources';
 import type { GameState } from '../context/types';
 import { mechanics } from './actionData';
 
+/**
+ * actionRules.ts
+ * ----------------
+ * Declaratively defines the behavioral rules and modifiers for each action type.
+ * 
+ * Each `ActionRule` can specify:
+ * - Conditional execution rules (`conditions`)
+ * - Hunger behavior (`blockWhenStarving`, `alwaysConsumesHunger`)
+ * - Chained actions (e.g., harvesting wild wheat can yield seeds)
+ * - Per-tick logic (`onTick`)
+ * 
+ * This system abstracts action logic from imperative code, allowing dynamic,
+ * scalable interaction control that integrates cleanly with the central game state.
+ * 
+ * Used primarily by `performNamedAction` to determine if and how an action executes.
+ */
 
 export interface ActionRule {
   chain?: {

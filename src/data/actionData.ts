@@ -3,6 +3,22 @@ import type { ResourceID } from "./resources";
 import { resources } from '../data/resources';
 import { trackInteraction } from './tracking';
 
+/**
+ * actionData.ts
+ * ----------------
+ * Defines core metadata for all game actions and related mechanics.
+ * 
+ * Includes:
+ * - `ActionType`: Enumerated list of all supported game action types
+ * - `MechanicFunction`: Function signature for action execution logic
+ * - `actionLabels`: UI definitions for each action (label, hunger cost, description)
+ * 
+ * This file acts as the centralized reference for rendering action buttons,
+ * describing mechanics in the UI, and aligning game logic with human-readable intent.
+ * 
+ * It connects gameplay logic with interface semantics.
+ */
+
 // ---- Action Types ----
 
 export type ActionType =
