@@ -1,42 +1,25 @@
-import type { GameState } from '../types';
-import { mechanics } from '../../data/actionData';
+// src/context/actions/performAction.ts
+// ------------------------------------------------------
+// Executes an arbitrary logic function using the full
+// game state object. This allows you to encapsulate
+// logic into reusable functions like:
+//
+//   performAction(myEffectFunction, gameState)
+//
+// Instead of hardcoding logic inside the context.
+// ------------------------------------------------------
+
+import type { GameStateHook } from '../gameState';
 
 /**
- * performAction Utility
- * ----------------------
- * A centralized executor for game actions that:
- * 1. Prevents execution if the player is starving (unless explicitly allowed)
- * 2. Runs the provided action logic via callback
- * 3. Triggers passive game mechanics (e.g., plant growth)
- * 4. Deducts 1 hunger point by default
- * 
- * This wrapper ensures consistent application of core gameplay rules
- * and allows options (e.g., allowWhenStarving) to override constraints
- * in controlled scenarios like feasting.
+ * performAction
+ * -------------------
+ * Generic logic executor. Receives a stateful function
+ * and injects the current game state into it.
  */
-
-
 export const performAction = (
-  callback: () => void,
-  state: GameState,
-  options?: { allowWhenStarving?: boolean }
-) => {
-  const {
-    hunger,
-    setHunger,
-  } = state;
-
-  // ✅ Block actions when starving unless allowed
-  if (hunger <= 0 && !options?.allowWhenStarving) return;
-
-  // ✅ Run the action
-  callback();
-
-  // ✅ Passive growth trigger
-  mechanics.grow(state);
-
-  // ✅ Reduce hunger only if not exempt
-  if (!options?.allowWhenStarving) {
-    setHunger(prev => Math.max(0, prev - 1));
-  }
+  fn: (state: GameStateHook) => void,
+  state: GameStateHook
+): void => {
+  fn(state);
 };
