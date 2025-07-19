@@ -54,32 +54,6 @@
   align-items: center;
 }
 
-.rock-icon {
-  position: relative;
-  width: 100px;
-  height: 100px;
-}
-
-.rock-icon span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  font-size: 5rem;
-  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
-  opacity: 1;
-}
-
-.rock-left,
-.rock-right {
-  opacity: 0;
-}
-
-.rock-icon .rock-left {
-  opacity: 1; /* Show only left by default */
-}
-
 .rock-text {
   font-size: 1.5rem;
   margin-top: 1rem;
@@ -92,6 +66,28 @@
 
 .rock-feedback:contains("No rock found") {
   color: #ff5252;
+}
+
+.rock-feedback {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  pointer-events: none;
+  animation: popFade 1s ease-out forwards;
+  white-space: nowrap;
+}
+
+@keyframes popFade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -30px);
+  }
 }
 
 /* ===== MAIN GAME LAYOUT (post-phase-1) ===== */

@@ -55,6 +55,9 @@ export interface GameContextType {
   hasClickedFirstRock: boolean;
   setHasClickedFirstRock: React.Dispatch<React.SetStateAction<boolean>>;
   
+  firstPickDone: boolean;
+  setFirstPickDone: (val: boolean) => void;
+
   lastGained: Partial<Record<ResourceID, number>>;
   setLastGained: React.Dispatch<React.SetStateAction<Partial<Record<ResourceID, number>>>>;
 

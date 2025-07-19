@@ -39,7 +39,7 @@ export const performNamedAction = (
   const beforeAmount = state.resources[resourceId] ?? 0;
 
   // ✅ Track attempt
-  trackInteraction(state.setTracker, resourceId, action, { attempted: 1 });
+  trackInteraction(state.setResourceInteractions, resourceId, action, { attempted: 1 });
 
   if (rule?.blockWhenStarving && state.hunger <= 0) {
     console.warn(`[performNamedAction] Blocked '${action}' due to 0 hunger`);
@@ -52,13 +52,13 @@ export const performNamedAction = (
 
   if (!isAllowed) {
     console.warn(`[performNamedAction] Blocked '${action}' due to failing conditions`);
-    trackInteraction(state.setTracker, resourceId, action, { failed: 1 });
+    trackInteraction(state.setResourceInteractions, resourceId, action, { failed: 1 });
     return { performed: false, affectsHunger: false };
   }
 
   if (!resource?.actions || typeof resource.actions[action] !== 'function') {
     console.warn(`[performNamedAction] Action '${action}' not found for resource '${resourceId}'`);
-    trackInteraction(state.setTracker, resourceId, action, { failed: 1 });
+    trackInteraction(state.setResourceInteractions, resourceId, action, { failed: 1 });
     return { performed: false };
   }
 
@@ -68,12 +68,12 @@ export const performNamedAction = (
   const gained = Math.max(0, afterAmount - beforeAmount);
 
   if (wasPerformed) {
-    trackInteraction(state.setTracker, resourceId, action, {
+    trackInteraction(state.setResourceInteractions, resourceId, action, {
       success: 1,
       gained,
     });
   } else {
-    trackInteraction(state.setTracker, resourceId, action, { failed: 1 });
+    trackInteraction(state.setResourceInteractions, resourceId, action, { failed: 1 });
   }
 
   const hungerCost = actionLabels[action]?.hungerCost ?? 0;

@@ -18,10 +18,14 @@ import type { ResourceID } from "./resources";
  * remaining decoupled from core action execution logic.
  */
 
+const TRACKABLE_ACTIONS: ResourceInteractionType[] = [
+  "harvest", "eat", "plant", "grind", "bake", "feast",
+];
+
 export function trackInteraction(
   setTracker: React.Dispatch<React.SetStateAction<InteractionTracker>>,
   resourceId: ResourceID,
-  type: ResourceInteractionType,
+  type: string,
   update: Partial<{
     attempted: number;
     success: number;
@@ -29,8 +33,14 @@ export function trackInteraction(
     gained: number;
   }> = {}
 ) {
+  if (!TRACKABLE_ACTIONS.includes(type as ResourceInteractionType)) {
+    return; // silently ignore untrackable types like "grow"
+  }
+
+  const interactionType = type as ResourceInteractionType;
+
   setTracker(prev => {
-    const previousStats = prev[resourceId]?.[type] ?? {
+    const previousStats = prev[resourceId]?.[interactionType] ?? {
       attempted: 0,
       success: 0,
       failed: 0,
@@ -41,7 +51,7 @@ export function trackInteraction(
       ...prev,
       [resourceId]: {
         ...prev[resourceId],
-        [type]: {
+        [interactionType]: {
           attempted: previousStats.attempted + (update.attempted ?? 0),
           success: previousStats.success + (update.success ?? 0),
           failed: previousStats.failed + (update.failed ?? 0),

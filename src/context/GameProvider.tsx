@@ -77,7 +77,6 @@ const [resourceInteractions, setResourceInteractions] = useState<InteractionTrac
   const [unlockedTechs, setUnlockedTechs] = useState<Set<TechID>>(new Set());
   const [maxResourceBonuses, setMaxResourceBonuses] = useState<Partial<Record<ResourceID, number>>>({});
   const [primitiveWheatPlanted, setPrimitiveWheatPlanted] = useState(false);
-  const [actionsSincePlanting, setActionsSincePlanting] = useState(0);
   const [readyToHarvestPrimitiveWheat, setReadyToHarvestPrimitiveWheat] = useState(false);
   const [grindClicks, setGrindClicks] = useState(0);
   const [bakeClicks, setBakeClicks] = useState(0);

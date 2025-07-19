@@ -1,9 +1,10 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGame } from './context/GameProvider';
 import { InventoryDisplay } from './components/InventoryDisplay';
 import { useAnimation } from './utils/Animations';
 import './utils/animations.css';
+import type { ActionResult } from './context/actions/performNamedAction';
 
 /**
  * App.tsx
@@ -11,73 +12,59 @@ import './utils/animations.css';
  * Entry component for the game's initial interaction phase ("Phase 1").
  * 
  * Responsibilities:
- * - Renders the fullscreen rock-breaking screen used to kick off the game
- * - Plays sound and animation on first rock click, guarantees resource gain
- * - Tracks first interaction to transition from intro to main gameplay
- * - Integrates core UI components like `InventoryDisplay` and visual feedback
- * 
- * This file defines the first layer of interaction and serves as the onboarding
- * moment before more advanced systems are revealed.
+ * - Uses unified `performNamedAction` for all harvests
+ * - Guarantees +1 on first pick, triggers rock split animation only on success
+ * - Displays inventory and feedback once game begins
  */
 
 function App() {
-  const { resources, setResources, performNamedAction } = useGame();
-  const [firstPickDone, setHasClickedFirstRock] = useState(false);
-  const [hasPickedOnce, setHasPickedOnce] = useState(false);
-  const [isRockClicked, triggerRockAnimation] = useAnimation(1000);
+  const { resources, performNamedAction, setResources } = useGame();
+  const [firstPickDone, setFirstPickDone] = useState(false);
+  const [rockId, setRockId] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
-  
+  const [isRockClicked, triggerRockAnimation] = useAnimation(1000);
+  const rocksBeforeRef = useRef(resources.rocks ?? 0);
+
+  useEffect(() => {
+    rocksBeforeRef.current = resources.rocks ?? 0;
+  }, [resources.rocks]);
+
   const handleRockClick = () => {
     const audio = new Audio("/sounds/rock-break.mp3");
     audio.play().catch((e) => console.warn("Audio play failed:", e));
-    audio.play();
 
-    if (!hasPickedOnce) {
-      // Guarantee +1 rock on first click
-      triggerRockAnimation();
-      setFeedback("+1");
-      setHasPickedOnce(true);
-      setHasClickedFirstRock(true);
+    const isFirstPick = !firstPickDone;
 
-      // Manually update resources
-        setResources(prev => ({
+    let before = resources.rocks ?? 0;
+
+    if (isFirstPick) {
+      setFirstPickDone(true);
+      before = before + 1;
+      setResources(prev => ({
         ...prev,
         rocks: (prev.rocks ?? 0) + 1,
       }));
-
-      setTimeout(() => {
-        triggerRockAnimation();;
-        setFeedback(null);
-      }, 1000);
-      return;
     }
 
-    const before = resources.rocks ?? 0;
+    const result = (performNamedAction?.("rocks", "harvest") ?? {
+      performed: false,
+    }) as ActionResult;
 
-    setResources(prev => {
-      performNamedAction?.("harvest_rocks"); // triggers state update
-      return prev; // trigger side-effect but don’t change state here
-    });
+    const after = (resources.rocks ?? 0) + (isFirstPick ? 1 : 0);
+    const gained = Math.max(0, after - before);
 
-    // Wait a tick before comparing
-    setTimeout(() => {
-      const after = resources.rocks ?? 0;
-      const gained = after - before;
-
-      if (gained > 0) {
-        triggerRockAnimation();
-        setFeedback(`+${gained}`);
-      } else {
-        setFeedback("No rock found");
-      }
-
+    if (result.performed || isFirstPick) {
+      triggerRockAnimation();
+      setFeedback(`+${gained}`);
       setTimeout(() => {
-        triggerRockAnimation();;
         setFeedback(null);
+        setRockId(prev => prev + 1);
       }, 1000);
-    }, 10);
+    } else {
+      setFeedback("No rock found");
+      setTimeout(() => setFeedback(null), 1000);
+    }
   };
-
 
   return (
     <div className="start-screen full-screen">
@@ -88,18 +75,23 @@ function App() {
       )}
 
       <div className="centered-rock-wrapper">
-        <div className={`rock-button ${isRockClicked ? "split" : ""}`} onClick={handleRockClick}>
-          <div className="rock-icon">
+        <div
+          className={`rock-button ${isRockClicked ? "split" : ""}`}
+          onClick={handleRockClick}
+        >
+          <div className="rock-icon" key={rockId}>
             {feedback && (
               <div
                 className="rock-feedback"
-                style={{ color: feedback === "No rock found" ? "#ff5252" : "#4caf50" }}
+                style={{
+                  color: feedback === "No rock found" ? "#ff5252" : "#4caf50",
+                }}
               >
                 {feedback}
               </div>
             )}
-            <span className="rock-left">🪨</span>
-            <span className="rock-right">🪨</span>
+            <span className="rock-left animate-out">🪨</span>
+            <span className="rock-right animate-out">🪨</span>
           </div>
           <div className="rock-text">
             {firstPickDone ? "Gather Rock" : "Pick a Rock"}

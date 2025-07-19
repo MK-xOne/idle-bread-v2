@@ -77,6 +77,10 @@ export const actionLabels: Record<ActionType, { label: string; hungerCost?: numb
 export const mechanics: Record<ActionType, MechanicFunction> = {
 
   harvest: (state, resourceId) => {
+    const isFirstPick = !state.firstPickDone;
+    const gain = isFirstPick ? 1 : (Math.random() < 0.5 ? 1 : 0);
+    if (gain === 0) return false;
+
     if (resourceId === "primitiveWheat" && !state.readyToHarvestPrimitiveWheat) {
       return false;
     }
