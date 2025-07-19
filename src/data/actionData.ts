@@ -1,7 +1,7 @@
 import type { GameState } from "../context/types";
 import type { ResourceID } from "./resources";
 import { resources } from '../data/resources';
-import { trackInteraction } from './tracking';
+import { trackInteraction } from "../context/tracking/interactionTracker";
 
 /**
  * actionData.ts

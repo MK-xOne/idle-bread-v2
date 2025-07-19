@@ -54,3 +54,4 @@ export function trackInteraction(
 export function advanceTick(state: TrackerState) {
   state.__ticks += 1;
 }
+

@@ -1,7 +1,7 @@
 // PageOne.tsx
 import "./PageOne.css";
 import "../utils/animations.css";
-import { useGame } from '../context/GameProvider';
+import { useGame } from '../context/GameContext'; // ✅ Use this if useGame is exported from GameContext.ts
 import type { ActionResult } from '../context/actions/performNamedAction';
 import { useEffect, useRef, useState } from "react";
 

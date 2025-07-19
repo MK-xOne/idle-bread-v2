@@ -19,10 +19,11 @@ export const performNamedAction = (
   }
 
   // ✅ Proper call to optional canPerform function inside the rule object
-  const canPerform = rule.canPerform?.(resourceId, state) ?? true;
-  if (!canPerform) {
+  const canPerform = rule?.canPerform?.(resourceId, state) ?? true; // ✅
+  if (!rule.perform || typeof rule.perform !== "function") {
     return { performed: false };
   }
+
 
   // ✅ Call the rule's perform method correctly
   if (typeof rule.perform !== "function") {

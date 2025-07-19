@@ -18,8 +18,7 @@ export const handleAction = (
   actionId: string
 ): ActionResult => {
   const [action, resource] = actionId.split('_');
-  const actionType = action as ActionType;
-  const resourceId = resource as ResourceID;
+  const [actionType, resourceId] = actionId.split('_') as [ActionType, ResourceID];
 
   const rule = actionRules[actionType];
 

@@ -19,6 +19,8 @@ import type { GameStateHook } from '../gameState';
 export const unlockTech = (techId: TechID, state: GameStateHook): void => {
   const tech = techTree[techId];
 
+  if (!tech) return;
+
   if (!tech || state.unlockedTechs.has(techId)) {
     return;
   }
