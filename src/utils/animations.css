@@ -1,96 +1,26 @@
-/**
- * animations.css
- * ----------------
- * Contains reusable CSS animations and transitions for enhancing UI feedback.
- * 
- * Included animations:
- * - `.split .rock-left / .rock-right`: Visual split effect for rock-breaking interactions
- * - `.rock-feedback`: Floating, fading popup animation used to show harvest feedback
- * - `@keyframes popFade`: Defines the float-and-fade animation used in feedback UI
- * 
- * These animations improve clarity and responsiveness during key player actions.
- */
+/* animations.css — Animations and Transitions */
 
-/* ===== ROCK SPLIT ANIMATION ===== */
-.rock-icon {
-  position: relative;
-  width: 100px;
-  height: 100px;
+@keyframes split-rock {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(0.3);
+    opacity: 0;
+  }
 }
-
-.rock-icon span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  font-size: 5rem;
-  opacity: 1;
-  transition: none;
-}
-
-/* Only apply transitions when animating out */
-.rock-left.animate-out,
-.rock-right.animate-out {
-  transition: transform 0.6s ease-out, opacity 0.3s ease-out;
-}
-
 
 .split .rock-left {
-  transform: translateX(-60px) rotate(-20deg);
-  opacity: 0;
+  animation: split-rock 1s ease-in-out forwards;
+  transform-origin: left center;
 }
 
 .split .rock-right {
-  transform: translateX(60px) rotate(20deg);
-  opacity: 0;
+  animation: split-rock 1s ease-in-out forwards;
+  transform-origin: right center;
 }
 
-@keyframes rockFadeOut {
-  0% {
-    transform: translateX(0) rotate(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(var(--x)) rotate(var(--r));
-    opacity: 0;
-  }
-}
-
-.rock-left.animate-out {
-  --x: -60px;
-  --r: -20deg;
-  animation: rockFadeOut 0.6s forwards;
-}
-
-.rock-right.animate-out {
-  --x: 60px;
-  --r: 20deg;
-  animation: rockFadeOut 0.6s forwards;
-}
-
-
-/* ===== FLOATING FEEDBACK POPUP ===== */
-.rock-feedback {
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.5rem;
-  pointer-events: none;
-  animation: popFade 1s ease-out forwards;
-  white-space: nowrap;
-  color: #4caf50;
-}
-
-/* Animate popup float + fade */
-@keyframes popFade {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -30px);
-  }
+.animate-out {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }

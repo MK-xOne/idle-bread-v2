@@ -1,9 +1,9 @@
 // PageOne.tsx
 import "./PageOne.css";
 import "../utils/animations.css";
-import { useGame } from '../context/GameContext'; // ✅ Use this if useGame is exported from GameContext.ts
-import type { ActionResult } from '../context/actions/performNamedAction';
+import { useGame } from "../context/GameContext";
 import { useEffect, useRef, useState } from "react";
+import type { ActionResult } from "../context/actions/performNamedAction";
 
 /**
  * PageOne.tsx
@@ -16,7 +16,6 @@ import { useEffect, useRef, useState } from "react";
 export default function PageOne() {
   const { resources, performNamedAction } = useGame();
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [rockId, setRockId] = useState(0);
   const rocksRef = useRef(resources.rocks ?? 0);
 
   useEffect(() => {
@@ -25,30 +24,21 @@ export default function PageOne() {
 
   const handleClick = () => {
     const before = rocksRef.current;
-    const result: ActionResult = performNamedAction?.('rocks', 'harvest') ?? { performed: false };
+    const result: ActionResult = performNamedAction?.("rocks", "harvest") ?? { performed: false };
 
-    setTimeout(() => {
-      const after = resources.rocks ?? 0;
-      const gained = Math.max(0, after - before);
-
-      if (result?.performed && gained > 0) {
-        setFeedback(`+${gained}`);
-        setRockId(prev => prev + 1); // Trigger rerender
-        setTimeout(() => setFeedback(null), 800); // Clear
-      }
-    }, 10);
+    const gained = (resources.rocks ?? 0) - before;
+    if (result.performed && gained > 0) {
+      setFeedback(`+${gained}`);
+      setTimeout(() => setFeedback(null), 1000);
+    }
   };
 
   return (
-    <div className="page-one-container" onClick={handleClick}>
-      <div className="rock-center">
-        <div className="rock-icon" key={rockId}>
-          {feedback && (
-            <div className="rock-feedback">{feedback}</div>
-          )}
-          🪨
-        </div>
-        <div className="rock-text">Pick a Rock</div>
+    <div className="page-one-container">
+      <div className="rock-center" onClick={handleClick}>
+        <div className="rock-icon gather-rock">🪨</div>
+        {feedback && <div className="rock-feedback">{feedback}</div>}
+        <div className="rock-text">Click the rock to gather resources</div>
       </div>
     </div>
   );

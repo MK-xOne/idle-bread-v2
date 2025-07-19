@@ -1,25 +1,14 @@
+// App.tsx
 import './App.css';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGame } from './context/GameProvider';
 import { InventoryDisplay } from './components/InventoryDisplay';
 import { useAnimation } from './utils/Animations';
 import './utils/animations.css';
 import type { ActionResult } from './context/actions/performNamedAction';
 
-/**
- * App.tsx
- * ----------
- * Entry component for the game's initial interaction phase ("Phase 1").
- * 
- * Responsibilities:
- * - Uses unified `performNamedAction` for all harvests
- * - Guarantees +1 on first pick, triggers rock split animation only on success
- * - Displays inventory and feedback once game begins
- */
-
 function App() {
-  const { resources, performNamedAction, setResources } = useGame();
-  const [firstPickDone, setFirstPickDone] = useState(false);
+  const { resources, performNamedAction } = useGame();
   const [rockId, setRockId] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isRockClicked, triggerRockAnimation] = useAnimation(1000);
@@ -31,29 +20,14 @@ function App() {
 
   const handleRockClick = () => {
     const audio = new Audio("/sounds/rock-break.mp3");
-    audio.play().catch((e) => console.warn("Audio play failed:", e));
+    audio.play().catch(e => console.warn("Audio play failed:", e));
 
-    const isFirstPick = !firstPickDone;
-
-    let before = resources.rocks ?? 0;
-
-    if (isFirstPick) {
-      setFirstPickDone(true);
-      before = before + 1;
-      setResources(prev => ({
-        ...prev,
-        rocks: (prev.rocks ?? 0) + 1,
-      }));
-    }
-
-    const result = (performNamedAction?.("rocks", "harvest") ?? {
-      performed: false,
-    }) as ActionResult;
-
-    const after = (resources.rocks ?? 0) + (isFirstPick ? 1 : 0);
+    const before = rocksBeforeRef.current;
+    const result: ActionResult = performNamedAction?.("rocks", "harvest") ?? { performed: false };
+    const after = resources.rocks ?? 0;
     const gained = Math.max(0, after - before);
 
-    if (result.performed || isFirstPick) {
+    if (result.performed) {
       triggerRockAnimation();
       setFeedback(`+${gained}`);
       setTimeout(() => {
@@ -68,7 +42,7 @@ function App() {
 
   return (
     <div className="start-screen full-screen">
-      {firstPickDone && (
+      {(resources.rocks ?? 0) > 0 && (
         <div className="left-panel">
           <InventoryDisplay />
         </div>
@@ -93,9 +67,7 @@ function App() {
             <span className="rock-left animate-out">🪨</span>
             <span className="rock-right animate-out">🪨</span>
           </div>
-          <div className="rock-text">
-            {firstPickDone ? "Gather Rock" : "Pick a Rock"}
-          </div>
+          <div className="rock-text">Gather Rock</div>
         </div>
       </div>
     </div>

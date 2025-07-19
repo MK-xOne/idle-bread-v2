@@ -1,203 +1,22 @@
-/**
- * App.css
- * ---------
- * Defines the global layout and visual styling for the game's main interface.
- * 
- * Includes styles for:
- * - Root and fullscreen layout setup (`#root`, `.start-screen`)
- * - Rock interaction UI (e.g., `.rock-button`, `.rock-icon`, `.rock-feedback`)
- * - Panel-based layout structure (e.g., `.panel`, `.left-panel`, `.column`)
- * - Technology and discovery UI (e.g., `.discovery-bar`, `.tech-icon`)
- * - Sliding data panel and close button styling
- * 
- * This stylesheet ensures visual consistency and responsive layout behavior
- * across all game phases, from the intro screen to advanced gameplay views.
- */
+/* App.css — Main App Container & Layout */
 
-/* ===== ROOT LAYOUT ===== */
-#root {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  background-color: rgb(0, 0, 0);
-  font-family: sans-serif;
-  color: #ffffff;
-}
-
-/* ===== PHASE 1: START SCREEN LAYOUT ===== */
-.start-screen.full-screen {
-  position: relative;
+.full-screen {
   height: 100vh;
   width: 100vw;
-  background-color: rgb(0, 0, 0);
+  overflow: hidden;
 }
 
-.centered-rock-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.start-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #111;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .left-panel {
-  width: 30%;
-  max-width: 300px;
-  margin-left: 2rem;
-}
-
-/* ===== CENTERED ROCK BUTTON ===== */
-.rock-button {
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.rock-text {
-  font-size: 1.5rem;
-  margin-top: 1rem;
-  color: #333;
-}
-
-.rock-feedback::before {
-  content: '';
-}
-
-.rock-feedback:contains("No rock found") {
-  color: #ff5252;
-}
-
-.rock-feedback {
   position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.5rem;
-  pointer-events: none;
-  animation: popFade 1s ease-out forwards;
-  white-space: nowrap;
-}
-
-@keyframes popFade {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -30px);
-  }
-}
-
-/* ===== MAIN GAME LAYOUT (post-phase-1) ===== */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.discovery-bar-wrapper {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #2a2a2a;
-  border-bottom: 1px solid #444;
-  padding: 0.5rem 1rem;
-  box-sizing: border-box;
-}
-
-.discovery-bar {
-  width: 100%;
-  padding: 0rem;
-  background-color: #2c2c2c;
-  border-bottom: 1px solid #444;
-  margin: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  font-size: 1.5rem;
-}
-
-.tech-icon {
-  display: inline-block;
-  cursor: default;
-}
-
-.main-layout {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: flex-start;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.panel {
-  background-color: #1e1e1e;
-  border: 1px solid #444;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  color: white;
-}
-
-/* ===== DATA PANEL ===== */
-.data-toggle-button {
-  position: fixed;
   top: 1rem;
-  right: 1rem;
-  z-index: 1001;
-  padding: 0.5rem 1rem;
-  background-color: #333;
-  color: #fff;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.data-panel-slide.open {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 100vh;
-  background-color: #1e1e1e;
-  border-left: 1px solid #444;
-  padding: 1rem;
-  z-index: 1000;
-  overflow-y: auto;
-  text-align: left;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
-}
-
-.data-panel-slide h2 {
-  margin-bottom: 1rem;
-}
-
-.data-panel-slide ul {
-  padding-left: 1.2rem;
-  list-style-type: disc;
-}
-
-.data-panel-slide ul ul {
-  list-style-type: circle;
-  margin-left: 1rem;
-}
-
-.close-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  color: #fff;
-  cursor: pointer;
+  left: 1rem;
 }

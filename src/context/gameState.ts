@@ -54,7 +54,6 @@ export const useGameState = () => {
   const [readyToHarvestPrimitiveWheat, setReadyToHarvestPrimitiveWheat] = useState(false);
   const [grindClicks,                  setGrindClicks                 ] = useState(0);
   const [bakeClicks,                   setBakeClicks                  ] = useState(0);
-  const [hasClickedFirstRock,          setHasClickedFirstRock         ] = useState(false);
 
   /* ---------- tiny helpers (logic-free) ---------- */
 
@@ -90,8 +89,6 @@ export const useGameState = () => {
 
     grindClicks,             setGrindClicks,
     bakeClicks,              setBakeClicks,
-
-    hasClickedFirstRock,     setHasClickedFirstRock,
 
     /* helpers */
     getTick,
