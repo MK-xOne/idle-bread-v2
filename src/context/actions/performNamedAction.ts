@@ -33,8 +33,8 @@ export const performNamedAction = (
 
   const result = rule.perform(resourceId, state);
 
-  if (!result || typeof result !== 'object') {
-    return { performed: true };
+  if (!result || typeof result !== 'object' || !result.amount || result.amount <= 0) {
+    return { performed: false };
   }
 
   return {

@@ -44,25 +44,36 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
     },
 
     perform: (resourceId, state) => {
-      const baseRange = resources[resourceId].harvestAmount ?? [1, 1];
-      const modifiers = state.modifiers?.harvestBonus?.[resourceId] ?? 0;
+      const resource = resources[resourceId];
+      const baseRange = resource.harvestAmount ?? [1, 1];
+      const modifier = state.modifiers?.harvestBonus?.[resourceId];
 
       const rawAmount = Math.floor(Math.random() * (baseRange[1] - baseRange[0] + 1)) + baseRange[0];
-      const bonus = Math.floor(rawAmount * modifiers);
+
+      // ✅ Use extraYieldRange correctly from the modifier object
+      const extraRange = modifier?.extraYieldRange ?? [0, 0];
+      const bonus = Math.floor(Math.random() * (extraRange[1] - extraRange[0] + 1)) + extraRange[0];
+
       const amount = rawAmount + bonus;
 
-      const max = resources[resourceId].maxAmount ?? 100;
+      const max = resource.maxAmount ?? 100;
+      const current = state.resources[resourceId] ?? 0;
+      const newTotal = Math.min(current + amount, max);
 
+      // ✅ Update resources
       state.setResources(prev => ({
         ...prev,
-        [resourceId]: Math.min((prev[resourceId] ?? 0) + amount, max),
+        [resourceId]: newTotal,
       }));
 
-      // ✅ Advance time
+      // ✅ Advance game time
       advanceTick(state);
 
+      const { tracker, getTick } = state;
+      const trackerState = { tracker, __ticks: getTick() };
+
       // ✅ Track interaction
-      trackInteraction(state, resourceId, "harvest", {
+      trackInteraction(trackerState, resourceId, "harvest", {
         attempted: true,
         succeeded: true,
         gained: amount,
@@ -73,8 +84,6 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
         affectsHunger: true,
       };
     },
-
-
 
     blockWhenStarving: true,
 

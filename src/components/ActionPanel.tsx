@@ -53,7 +53,7 @@ export const ActionPanel = () => {
 
           const isRockHarvest = actionName === 'harvest' && resource.id === 'rocks';
           const label = isRockHarvest
-            ? '🪨 Gather Rocks'
+            ? ''
             : actionLabels[actionName as keyof typeof actionLabels]?.label ?? actionName;
 
           const description =
@@ -69,11 +69,22 @@ export const ActionPanel = () => {
                   console.log(`[UI] Button clicked:`, id);
                   performNamedAction(id);
                 }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
               >
-                {label} ({resource.name})
-                {description && (
-                  <p style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>{description}</p>
-                )}
+                <img
+                  src={resource.icon}
+                  alt={`Gather ${resource.name}`}
+                  style={{ width: '64px', height: '64px' }}
+                />
+                <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Gather Rock</div>
               </button>
             </div>
           );
