@@ -71,7 +71,6 @@ export const TechnologyPanel = () => {
               style={{
                 transition: 'all 0.2s ease',
                 boxShadow: isClickable ? '0 0 8px rgba(231, 211, 28, 0.61)' : 'none',
-                cursor: isClickable ? 'pointer' : 'not-allowed',
                 opacity: isClickable ? 1 : 0.4,
                 marginBottom: '0.75rem',
                 textAlign: 'center',

@@ -105,7 +105,7 @@ export const resources: Record<ResourceID, Resource> = {
     id: 'seeds',
     name: '🌰 Seeds',
     description: 'Useful for planting new crops.',
-    discovered: true,
+    discovered: false,
     edible: false,
     maxAmount : 50,
     harvestAmount: [1, 2],

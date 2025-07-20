@@ -31,24 +31,27 @@ export const InventoryDisplay = () => {
   return (
     <div className="panel">
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem' }}>
-        {(Object.entries(resources) as [ResourceID, number][])
-          .filter(([key]) => discoveredResources.has(key))
-          .map(([key, value]) => {
-            const baseMax = resourceMeta[key]?.maxAmount ?? Infinity;
-            const bonus = maxResourceBonuses?.[key] ?? 0;
-            const max = baseMax + bonus;
-            return (
-              <div
-                key={key}
-                style={{
-                  padding: "0.5rem",
-                  borderRadius: "4px",
-                }}
-              >
-                <strong>{formatLabel(key)}</strong>: {value}{shouldShowMax(key) ? ` / ${max}` : ""}
-              </div>
-            );
-          })}
+       {Array.from(discoveredResources)
+        .filter((key): key is ResourceID => key in resources && resources[key] > 0)
+        .map((key) => {
+          const value = resources[key];
+          const baseMax = resourceMeta[key]?.maxAmount ?? Infinity;
+          const bonus = maxResourceBonuses?.[key] ?? 0;
+          const max = baseMax + bonus;
+
+          return (
+            <div
+              key={key}
+              style={{
+                padding: "0.5rem",
+                borderRadius: "4px",
+              }}
+            >
+              <strong>{formatLabel(key)}</strong>: {value}
+              {shouldShowMax(key) ? ` / ${max}` : ""}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

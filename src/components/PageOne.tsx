@@ -105,7 +105,7 @@ export default function PageOne() {
       </div>
 
       {/* Inventory panel appears after first rock */}
-      {rocks > 0 && (
+      {Object.values(resources).some(amount => amount > 0) && (
         <div style={{ position: "absolute", top: "10px", left: "10px", zIndex: 1000 }}>
           <InventoryDisplay />
         </div>

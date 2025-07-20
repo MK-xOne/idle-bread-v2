@@ -32,10 +32,37 @@ export const performNamedAction = (
   }
 
   const result = rule.perform(resourceId, state);
+  
 
   if (!result || typeof result !== 'object' || !result.amount || result.amount <= 0) {
     return { performed: false };
   }
+  
+
+    // 🔁 Execute any chained actions after success
+  if (rule.chain && Array.isArray(rule.chain)) {
+    for (const chain of rule.chain) {
+      const allowed =
+        !chain.conditions ||
+        chain.conditions.every(cond =>
+          cond({ resource: resourceId, action, state })
+        );
+
+      if (allowed) {
+        const chainedRule = actionRules[chain.action];
+        if (chainedRule?.perform) {
+          const chainedResult = chainedRule.perform(chain.target, state);
+
+          if (chainedResult?.amount && chainedResult.amount > 0) {
+            console.log(
+              `[CHAIN] Performed ${chain.action} on ${chain.target} due to ${action} on ${resourceId}`
+            );
+          }
+        }
+      }
+    }
+  }
+
 
   return {
     performed: true,
