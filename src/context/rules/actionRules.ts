@@ -45,8 +45,23 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
 
     perform: (resourceId, state) => {
       const resource = resources[resourceId];
+      const { tracker, getTick } = state;
+      const trackerState = { tracker, __ticks: getTick() };
+
+      if (resource.harvestSuccessRate && Math.random() > resource.harvestSuccessRate) {
+        trackInteraction(trackerState, resourceId, "harvest", {
+          attempted: true,
+          succeeded: false,
+          gained: 0,
+        });
+
+        advanceTick(state); // still consumes a turn
+        return { performed: false, affectsHunger: true };
+      }
+
       const baseRange = resource.harvestAmount ?? [1, 1];
       const modifier = state.modifiers?.harvestBonus?.[resourceId];
+
 
       const rawAmount = Math.floor(Math.random() * (baseRange[1] - baseRange[0] + 1)) + baseRange[0];
 
@@ -65,12 +80,6 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
         ...prev,
         [resourceId]: newTotal,
       }));
-
-      // ✅ Advance game time
-      advanceTick(state);
-
-      const { tracker, getTick } = state;
-      const trackerState = { tracker, __ticks: getTick() };
 
       // ✅ Track interaction
       trackInteraction(trackerState, resourceId, "harvest", {

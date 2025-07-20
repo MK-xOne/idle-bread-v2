@@ -24,7 +24,7 @@ export default function PageOne() {
       setTimeout (() => setFeedback(null), 800)
     } 
     else if (!result?.performed){
-      setFeedback("❌ Could not harvest rocks.");
+      setFeedback("No rock found");
       setTimeout (() => setFeedback(null), 800)
     }
     console.log("Harvest result:", result);
@@ -42,7 +42,7 @@ export default function PageOne() {
       </button>
       <h3>Gather Rock</h3>
       {feedback && (
-        <div style={{ fontSize: "2rem", color: "white", transition: "opacity 0.3s ease" }}>
+        <div style={{ fontSize: "1rem", color: "white", transition: "opacity 0.3s ease" }}>
           {feedback}
         </div>
       )}
