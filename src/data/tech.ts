@@ -65,8 +65,8 @@ export const techTree: Record<TechID, Tech> = {
   icon: '🌾',
   cost: { rocks: 10 },
   unlocks: {
-    actions: ['harvest_wildWheat'],
-    resources: ['wildWheat'],
+    actions: ['harvest_wildWheat', 'harvest_seeds'],
+    resources: ['wildWheat', 'seeds'],
   },
 },
 

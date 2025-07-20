@@ -20,6 +20,7 @@ import { unlockTech } from "../context/logic/techHandlers";
 
 export const TechnologyPanel = () => {
   const gameState = useGame();
+  
   const {
     resources,
     setResources,
@@ -56,8 +57,10 @@ export const TechnologyPanel = () => {
       {Object.values(techTree).map((tech) => {
         const isUnlocked = unlockedTechs.has(tech.id);
         const isDiscoverable = isTechDiscoverable(tech, unlockedTechs);
+        const fireUnlocked = unlockedTechs.has("discoverFire");
 
-        if (isUnlocked || !isDiscoverable || !canAfford(tech.cost)) return null;
+        const shouldShow = isDiscoverable && (canAfford(tech.cost) || fireUnlocked);
+        if (isUnlocked || !shouldShow) return null;
 
         const isClickable = canAfford(tech.cost) && hunger > 0;
 
