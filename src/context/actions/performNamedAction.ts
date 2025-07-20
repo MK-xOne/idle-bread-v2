@@ -3,7 +3,7 @@ import { actionRules } from '../rules/actionRules';
 import { resources } from '../../data/resources';
 import type { ResourceID } from '../../data/resources';
 import type { ActionType } from '../../data/actionData';
-import type { ActionResult } from '../types'; 
+import type { ActionResult } from '../types';
 
 export const performNamedAction = (
   state: GameStateHook,
@@ -13,33 +13,32 @@ export const performNamedAction = (
   const resource = resources[resourceId];
   const rule = actionRules[action];
 
-  if (!resource || !rule) {
-    console.warn(`[performNamedAction] Missing rule or resource for ${action}_${resourceId}`);
+  if (!resource || !rule || typeof rule.perform !== 'function') {
+    console.warn(`[performNamedAction] Missing rule or perform() for ${action}_${resourceId}`);
     return { performed: false };
   }
 
-  // ✅ Proper call to optional canPerform function inside the rule object
-  const canPerform = rule?.canPerform?.(resourceId, state) ?? true; // ✅
-  if (!rule.perform || typeof rule.perform !== "function") {
-    return { performed: false };
+  const canPerform = rule.canPerform?.(resourceId, state) ?? true;
+  if (!canPerform) {
+    return { performed: false, amount: 0, affectsHunger: false };
   }
 
+  const blockWhenStarving = rule.blockWhenStarving ?? true;
+  const alwaysConsumes = rule.alwaysConsumesHunger ?? false;
 
-  // ✅ Call the rule's perform method correctly
-  if (typeof rule.perform !== "function") {
-    console.warn(`[performNamedAction] No perform function defined for ${action}_${resourceId}`);
-    return { performed: false };
+  // ❌ Block action completely if hunger is 0 and rule wants to block when starving
+  if (blockWhenStarving && state.hunger <= 0) {
+    return { performed: false, amount: 0, affectsHunger: true };
   }
 
+  // ✅ Execute the action
   const result = rule.perform(resourceId, state);
-  
 
   if (!result || typeof result !== 'object' || !result.amount || result.amount <= 0) {
     return { performed: false };
   }
-  
 
-    // 🔁 Execute any chained actions after success
+  // 🔁 Execute chained actions (if hunger allows)
   if (rule.chain && Array.isArray(rule.chain)) {
     for (const chain of rule.chain) {
       const allowed =
@@ -50,23 +49,32 @@ export const performNamedAction = (
 
       if (allowed) {
         const chainedRule = actionRules[chain.action];
+        const chainedBlock = chainedRule?.blockWhenStarving ?? true;
+
+        if (chainedBlock && state.hunger <= 0) {
+          console.log(`[CHAIN BLOCKED] Skipped ${chain.action} on ${chain.target} due to 0 hunger`);
+          continue;
+        }
+
         if (chainedRule?.perform) {
           const chainedResult = chainedRule.perform(chain.target, state);
-
           if (chainedResult?.amount && chainedResult.amount > 0) {
-            console.log(
-              `[CHAIN] Performed ${chain.action} on ${chain.target} due to ${action} on ${resourceId}`
-            );
+            console.log(`[CHAIN] Performed ${chain.action} on ${chain.target} due to ${action} on ${resourceId}`);
           }
         }
       }
     }
   }
 
+  // ✅ Deduct hunger if needed
+  const affectsHunger = result.affectsHunger ?? true;
+  if (affectsHunger && (state.hunger > 0 || alwaysConsumes)) {
+    state.setHunger(prev => Math.max(0, prev - 4) +1 );
+  }
 
   return {
     performed: true,
     amount: result.amount ?? 0,
-    affectsHunger: result.affectsHunger ?? true,
+    affectsHunger,
   };
 };

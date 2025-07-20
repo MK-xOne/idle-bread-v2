@@ -6,6 +6,7 @@ import { resources as resourceData } from "../data/resources"; // ✅ This is th
 import { InventoryDisplay } from './InventoryDisplay';
 import { techTree } from "../data/tech";
 import { TechnologyPanel } from "./TechnologyPanel";
+import { HungerBar } from './HungerBar';
 
 
 export default function PageOne() {
@@ -13,6 +14,9 @@ export default function PageOne() {
   const rocks = resources.rocks ?? 0;
   const [feedback, setFeedback] = useState<string | null>(null);
   const rocksRef = useRef(rocks);
+  const { hunger } = useGame();
+  const [hungerBarVisible, setHungerBarVisible] = useState(false);
+
 
   const canShowWildWheatUnlock =
   !unlockedTechs.has("unlockWildWheat") &&
@@ -22,21 +26,36 @@ export default function PageOne() {
     rocksRef.current = rocks;
   }, [rocks]);
 
+  useEffect(() => {
+  if (hunger <= 25 && !hungerBarVisible) {
+    setHungerBarVisible(true);
+  }
+}, [hunger, hungerBarVisible]);
+
   const handleClick = () => {
+    const current = resources.rocks ?? 0;
+    const cap = resourceData.rocks.maxAmount ?? Infinity;
+
+    if (current >= cap) {
+      setFeedback("❌ No more space");
+      setTimeout(() => setFeedback(null), 800);
+      return;
+    }
+
     const result = performNamedAction("rocks", "harvest");
 
     if (result?.performed && result.amount && result.amount > 0) {
       setFeedback(`+${result.amount} ${resourceData.rocks.icon}`);
-      setTimeout (() => setFeedback(null), 800)
-    } 
-    else if (!result?.performed){
+    } else {
       setFeedback("No rock found");
-      setTimeout (() => setFeedback(null), 800)
     }
+
+    setTimeout(() => setFeedback(null), 800);
     console.log("Harvest result:", result);
   };
 
   return (
+    
     <div
       className="page-one"
       style={{
@@ -47,6 +66,21 @@ export default function PageOne() {
         height: "100vh",
       }}
     >
+      {hungerBarVisible && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: '600px',
+          padding: '0.5rem',
+          zIndex: 1000
+        }}>
+          <HungerBar />
+        </div>
+      )}
+
       {/* Centered action buttons */}
       <div
         style={{
@@ -70,6 +104,11 @@ export default function PageOne() {
         {unlockedTechs.has("unlockWildWheat") && (
           <button
             onClick={() => {
+              if ((resources.wildWheat ?? 0) >= (resourceData.wildWheat.maxAmount ?? Infinity)) {
+                setFeedback("❌ No more space");
+                setTimeout(() => setFeedback(null), 800);
+                return;
+              }
               const result = performNamedAction("wildWheat", "harvest");
               if (result?.performed && result.amount && result.amount > 0) {
                 setFeedback(`+${result.amount} ${resourceData.wildWheat.icon}`);
@@ -117,5 +156,4 @@ export default function PageOne() {
       </div>
     </div>
   );
-
 }
