@@ -36,8 +36,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       value={{
         ...gameState,
         perform,
-        performNamedAction: (resourceId, actionType) =>
-        doNamedAction(gameState, resourceId, actionType),
+        performNamedAction,
       
       }}
     >

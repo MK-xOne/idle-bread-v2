@@ -67,7 +67,7 @@ export default function PageOne() {
         </button>
 
         {/* Gather Wild Wheat Button – unlocked dynamically */}
-        {unlockedActions.has("harvest_wildWheat") && (
+        {unlockedTechs.has("unlockWildWheat") && (
           <button
             onClick={() => {
               const result = performNamedAction("wildWheat", "harvest");
@@ -80,7 +80,7 @@ export default function PageOne() {
               }
             }}
             className="wheat-button"
-            style={{ fontSize: "4rem", background: "none", border: "none", cursor: "pointer" }}
+            style={{ fontSize: "4rem", background: "none", border: "none", cursor: "pointer", paddingLeft: "2rem", }}
             aria-label="Harvest Wild Wheat"
           >
             {resourceData.wildWheat.icon}
@@ -89,7 +89,7 @@ export default function PageOne() {
       </div>
 
       {/* Label below the button group */}
-      <h3>Gather Rock</h3>
+      <h3></h3>
 
       {/* Harvest feedback */}
       <div

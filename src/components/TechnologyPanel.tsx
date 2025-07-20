@@ -19,6 +19,7 @@ import { unlockTech } from "../context/logic/techHandlers";
 
 
 export const TechnologyPanel = () => {
+  const gameState = useGame();
   const {
     resources,
     setResources,
@@ -34,7 +35,6 @@ export const TechnologyPanel = () => {
 
   const handleUnlock = (techId: keyof typeof techTree) => {
     const tech = techTree[techId];
-    const gameState = useGame();
 
     if (!canAfford(tech.cost)) return;
 

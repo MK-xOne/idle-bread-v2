@@ -67,6 +67,7 @@ export const resources: Record<ResourceID, Resource> = {
     name: "Wild Wheat",
     description: "Unpredictable and coarse grains from the wild.",
     edible: true,
+    icon: '🌾',
     hungerRestore: 5,
     eatCost: 5,
     maxAmount: 100,
