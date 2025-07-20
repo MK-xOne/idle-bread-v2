@@ -21,11 +21,25 @@ export const EatingPanel = () => {
   const actions = getAvailableResourceActions(eatingActionTypes, unlockedActions);
 
   return (
-      <div className="panel">
-      <h3>🍽️ Eating</h3>
+      <div className="panel" style={{ }}>
+      <h3></h3>
       {actions.map(({ resourceId, actionType, label }) => (
         <div key={`${actionType}_${resourceId}`} style={{ marginBottom: '1rem' }}>
-          <button onClick={() => performNamedAction(`${actionType}_${resourceId}`)}>
+          <button
+            onClick={() => performNamedAction(resourceId, actionType)}
+            className="eat-button"
+            style={{
+              position: 'absolute',
+              top: 50,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              fontSize: "1.2rem",
+              borderRadius: "0.5rem",
+              width: '25%',
+              maxWidth:'600px',
+              cursor: "pointer",
+            }}
+          >
             {label}
           </button>
         </div>

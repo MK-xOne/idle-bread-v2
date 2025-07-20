@@ -69,7 +69,7 @@ export const resources: Record<ResourceID, Resource> = {
     edible: true,
     icon: '🌾',
     hungerRestore: 5,
-    eatCost: 5,
+    eatCost: 3,
     maxAmount: 100,
     harvestAmount : [2, 4],
     harvestSuccessRate : .51,
@@ -89,7 +89,7 @@ export const resources: Record<ResourceID, Resource> = {
     hungerRestore: 10,
     eatCost: 5,
     maxAmount: 100,
-    harvestAmount: [7, 10],
+    harvestAmount: [9, 12],
     harvestSuccessRate: .61,
     discovered: false,
     actions: {
@@ -107,8 +107,8 @@ export const resources: Record<ResourceID, Resource> = {
     description: 'Useful for planting new crops.',
     discovered: false,
     edible: false,
-    maxAmount : 50,
-    harvestAmount: [1, 2],
+    maxAmount : 75,
+    harvestAmount: [2, 3],
     harvestSuccessRate: .31,
     actions: {
       harvest: (state) => mechanics.harvest (state, "seeds"),
@@ -133,7 +133,7 @@ export const resources: Record<ResourceID, Resource> = {
     edible: true,
     hungerRestore: 30,
     eatCost: 1,
-    maxAmount: 25,
+    maxAmount: 35,
     discovered: false,
     actions: {
       bake: (state) => mechanics.bake(state),

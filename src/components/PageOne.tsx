@@ -7,6 +7,7 @@ import { InventoryDisplay } from './InventoryDisplay';
 import { techTree } from "../data/tech";
 import { TechnologyPanel } from "./TechnologyPanel";
 import { HungerBar } from './HungerBar';
+import { EatingPanel } from './EatingPanel';
 
 
 export default function PageOne() {
@@ -16,7 +17,6 @@ export default function PageOne() {
   const rocksRef = useRef(rocks);
   const { hunger } = useGame();
   const [hungerBarVisible, setHungerBarVisible] = useState(false);
-
 
   const canShowWildWheatUnlock =
   !unlockedTechs.has("unlockWildWheat") &&
@@ -78,6 +78,7 @@ export default function PageOne() {
           zIndex: 1000
         }}>
           <HungerBar />
+          <EatingPanel />
         </div>
       )}
 

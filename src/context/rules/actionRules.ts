@@ -102,7 +102,6 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
         action: 'harvest',
         conditions: [
           ({ resource }) => resource === 'wildWheat',
-          () => Math.random() < 0.5,
         ],
       },
     ],

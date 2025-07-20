@@ -78,6 +78,7 @@ export const TechnologyPanel = () => {
                 backgroundColor: 'black',
                 padding: '0.5rem',
                 borderRadius: '6px',
+                cursor: "pointer",
               }}
             >
               <div>

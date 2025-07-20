@@ -97,7 +97,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     const successChance = baseRate + successRateBonus;
     const isSuccess = Math.random() <= successChance;
     if (!isSuccess) {
-      trackInteraction(state.setResourceInteractions, resourceId, 'harvest');
+      trackInteraction(state.setResourceInteractions, resourceId, 'harvest', { attempted: true, failed: true });
       return true; // harvest was attempted even if nothing was gained
     }
 
@@ -120,7 +120,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
       [resourceId]: newAmount,
     }));
 
-    trackInteraction(state.setResourceInteractions, resourceId, 'harvested');
+    trackInteraction(state.setResourceInteractions, resourceId, 'harvest', { attempted: true, succeeded: true, gained: totalAmount });
     state.discoverResource(resourceId);
 
     if (resourceId === "primitiveWheat") {
@@ -144,7 +144,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
       [resourceId]: prev[resourceId] - cost,
     }));
     state.setHunger(prev => Math.min(100, prev + restore));
-    trackInteraction(state.setResourceInteractions, resourceId, 'eaten');
+    trackInteraction(state.setResourceInteractions, resourceId, 'eat', { attempted: true, succeeded: true, gained: restore });
     return true;
   },
 
@@ -164,7 +164,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
       [resourceId]: prev[resourceId] - totalCost,
     }));
     state.setHunger(100);
-    trackInteraction(state.setResourceInteractions, resourceId, 'eaten');
+    trackInteraction(state.setResourceInteractions, resourceId, 'feast', { attempted: true, succeeded: true, gained: 100 });
     return true;
   },
 
@@ -176,7 +176,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     state.setPrimitiveWheatPlanted(true);
     state.setPlantedAtTick(state.getTick());
     state.setReadyToHarvestPrimitiveWheat(false);
-    trackInteraction(state.setResourceInteractions, "seeds", "planted");
+    trackInteraction(state.setResourceInteractions, "seeds", "plant", { attempted: true, succeeded: true });
     return true;
   },
 
@@ -199,7 +199,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
       state.setReadyToHarvestPrimitiveWheat(true);
       state.setPlantedAtTick(null); // clear to avoid re-trigger
       state.discoverResource("primitiveWheat");
-      trackInteraction(state.setResourceInteractions, "primitiveWheat", "grown");
+      trackInteraction(state.setResourceInteractions, "primitiveWheat", "grow", { attempted: true, succeeded: true });
     }
 
     return false;
@@ -220,7 +220,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           flour: prev.flour + 1,
         }));
         state.discoverResource("flour");
-        trackInteraction(state.setResourceInteractions, "flour", "grinded");
+        trackInteraction(state.setResourceInteractions, "flour", "grind", { attempted: true, succeeded: true, gained: 1 });
       }
       return next;
     });
@@ -243,7 +243,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
           bread: prev.bread + 1,
         }));
         state.discoverResource("bread");
-        trackInteraction(state.setResourceInteractions, "bread", "baked");
+        trackInteraction(state.setResourceInteractions, "bread", "bake", { attempted: true, succeeded: true, gained: 1 });
       }
       return next;
     });

@@ -15,18 +15,18 @@ import { resources as resourceMeta, type ResourceID } from "../data/resources";
  * different screen sizes and resource counts.
  */
 
-const shouldShowMax = (key: ResourceID) => {
-  // Only show max values for resources that the player has “understood”
-  return false; // Later you can unlock others dynamically
-};
-
 const formatLabel = (id: string) =>
   id
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, str => str.toUpperCase());
 
 export const InventoryDisplay = () => {
-  const { resources, discoveredResources, maxResourceBonuses } = useGame();;
+  const { resources, discoveredResources, maxResourceBonuses, unlockedTechs } = useGame();
+  const shouldShowMax = (key: ResourceID) => {
+  // Only show max values for resources that the player has “understood”
+    return unlockedTechs.has("pottery");  // Later you can unlock others dynamically
+};
+
 
   return (
     <div className="panel">

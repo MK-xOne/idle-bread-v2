@@ -38,6 +38,7 @@ export interface Tech {
   unlockedByDefault?: boolean;
   requires?: TechID[];
   unlocks: {
+    ui?: string[];
     resources?: ResourceID[];
     actions?: string[];
     techs?: TechID[];
@@ -65,7 +66,7 @@ export const techTree: Record<TechID, Tech> = {
   icon: '🌾',
   cost: { rocks: 10 },
   unlocks: {
-    actions: ['harvest_wildWheat', 'harvest_seeds'],
+    actions: ['harvest_wildWheat', 'harvest_seeds', 'eat_wildWheat', 'feat_wildWheat'],
     resources: ['wildWheat', 'seeds'],
   },
 },
@@ -89,7 +90,7 @@ export const techTree: Record<TechID, Tech> = {
           type: 'harvestBonus',
           resource: 'seeds', 
           successRateBonus: 0.25,
-          extraYieldRange: [1, 2],
+          extraYieldRange: [2, 3],
         }
       ],
     },
@@ -105,9 +106,10 @@ export const techTree: Record<TechID, Tech> = {
     unlocks: {
       effects: [
         {
+        ui: ['showMaxInventory'],
         type: 'MaxInventoryBonus',
         resource: 'all',
-        amount: 100,
+        amount: 30,
       },
     ],
   },
@@ -118,7 +120,7 @@ export const techTree: Record<TechID, Tech> = {
     name: 'Unlock Planting',
     description: 'From gatherer to grower.',
     icon: '🌱',
-    cost: { seeds: 30 },
+    cost: { seeds: 20 },
     requires: ["stoneTools"],
     unlocks: {
       resources: ['primitiveWheat'],
