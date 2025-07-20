@@ -8,7 +8,7 @@ import { techTree } from "../data/tech";
 import { TechnologyPanel } from "./TechnologyPanel";
 import { HungerBar } from './HungerBar';
 import { EatingPanel } from './EatingPanel';
-
+import PlantingPanel from "./PlantingPanel";
 
 export default function PageOne() {
   const { resources, performNamedAction, unlockedActions, unlockedTechs, setUnlockedTechs } = useGame();
@@ -81,6 +81,9 @@ export default function PageOne() {
           <EatingPanel />
         </div>
       )}
+
+      {resources.seeds > 0 && <PlantingPanel />}
+
 
       {/* Centered action buttons */}
       <div

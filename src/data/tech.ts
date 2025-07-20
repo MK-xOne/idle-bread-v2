@@ -115,18 +115,18 @@ export const techTree: Record<TechID, Tech> = {
   },
 },
 
-  unlockPlanting: {
-    id: 'unlockPlanting',
-    name: 'Unlock Planting',
-    description: 'From gatherer to grower.',
-    icon: '🌱',
-    cost: { seeds: 20 },
-    requires: ["stoneTools"],
-    unlocks: {
-      resources: ['primitiveWheat'],
-      actions: ['plant_primitiveWheat', 'grow_primitiveWheat', 'harvest_primitiveWheat', 'seedForaging'],
-    },
+unlockPlanting: {
+  id: 'unlockPlanting',
+  name: 'Unlock Planting',
+  description: 'From gatherer to grower.',
+  icon: '🌱',
+  cost: { seeds: 20 },
+  requires: ["stoneTools"],
+  unlocks: {
+    resources: ['primitiveWheat'],
+    actions: ['plant_primitiveWheat', 'grow_primitiveWheat', 'harvest_primitiveWheat', 'seedForaging'],
   },
+},
 
 seedForaging: {
   id: 'seedForaging', 

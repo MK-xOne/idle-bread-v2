@@ -109,21 +109,26 @@ export const actionRules: Partial<Record<ActionType, ActionRule>> = {
 
   eat: {
     canPerform: (resourceId, state) => {
-      return state.resources[resourceId] > 0 && state.hunger < 100;
+      const def = resources[resourceId];
+      const cost = def?.eatCost ?? 1;
+      return state.resources[resourceId] >= cost && state.hunger < 100;
     },
 
     perform: (resourceId, state) => {
-      const restore = resources[resourceId].hungerRestore ?? 5;
+      const def = resources[resourceId];
+      const cost = def?.eatCost ?? 1;
+      const restore = def?.hungerRestore ?? 5;
       const hungerToRestore = Math.min(restore, 100 - state.hunger);
 
       state.setHunger(prev => Math.min(100, prev + hungerToRestore));
       state.setResources(prev => ({
         ...prev,
-        [resourceId]: prev[resourceId] - 1,
+        [resourceId]: prev[resourceId] - cost,
       }));
 
-      return { amount: 1, affectsHunger: false };
+      return { amount: cost, affectsHunger: false };
     },
+
 
     alwaysConsumesHunger: false,
     blockWhenStarving: false,

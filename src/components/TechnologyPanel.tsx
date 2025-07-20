@@ -64,40 +64,47 @@ export const TechnologyPanel = () => {
 
         const isClickable = canAfford(tech.cost) && hunger > 0;
 
-        return (
-          <div key={tech.id} style={{ display: 'flex', justifyContent: 'center' }}>
-            <div
-              onClick={() => isClickable && handleUnlock(tech.id)}
-              style={{
-                transition: 'all 0.2s ease',
-                boxShadow: isClickable ? '0 0 8px rgba(231, 211, 28, 0.61)' : 'none',
-                opacity: isClickable ? 1 : 0.4,
-                marginBottom: '0.75rem',
-                textAlign: 'center',
-                color: 'white',
-                backgroundColor: 'black',
-                padding: '0.5rem',
-                borderRadius: '6px',
-                cursor: "pointer",
-              }}
-            >
-              <div>
-                {tech.icon} {tech.name}
-              </div>
-              <span
-                style={{
-                  fontSize: '0.7rem',
-                  fontStyle: 'italic',
-                  color: '#888',
-                }}
-              >
-                ({Object.entries(tech.cost)
-                  .map(([k, v]) => `${v} ${k}`)
-                  .join(' + ')})
-              </span>
-            </div>
+      return (
+        <div
+          key={tech.id}
+          onClick={() => isClickable && handleUnlock(tech.id)}
+          style={{
+            transition: 'all 0.2s ease',
+            boxShadow: isClickable ? '0 0 8px rgba(231, 211, 28, 0.61)' : 'none',
+            opacity: isClickable ? 1 : 0.4,
+            marginBottom: '0.75rem',
+            textAlign: 'left',
+            color: 'white',
+            width: '100%',
+            maxWidth: '150px',
+            backgroundColor: 'black',
+            padding: '0.5rem',
+            borderRadius: '6px',
+            cursor: isClickable ? 'pointer' : 'default',
+          }}
+        >
+          <div style={{ fontWeight: 'bold', marginBottom: '0.2rem' }}>
+            {tech.icon} {tech.name}
           </div>
-        );
+          <div style={{ fontSize: '0.75rem', lineHeight: 1.2 }}>
+            {tech.description}
+          </div>
+          <div
+            style={{
+              fontSize: '0.7rem',
+              fontStyle: 'italic',
+              color: '#aaa',
+              marginTop: '0.25rem',
+            }}
+          >
+            Cost: (
+            {Object.entries(tech.cost).map(([k, v], i, arr) =>
+              `${v} ${k}${i < arr.length - 1 ? ' + ' : ''}`
+            )}
+            )
+            </div>
+        </div>
+      );
       })}
     </div>
   );

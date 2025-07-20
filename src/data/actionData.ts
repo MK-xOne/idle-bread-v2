@@ -34,38 +34,45 @@ export type MechanicFunction = (state: GameState, resourceId?: ResourceID) => bo
 
 // ---- UI Labels ----
 
-export const actionLabels: Record<ActionType, { label: string; hungerCost?: number; description?: string }> = {
+export const actionLabels: Record<ActionType, { icon: string, label: string; hungerCost?: number; description?: string }> = {
   harvest: {
+    icon: "🌾",
     label: "🌾 Harvest",
     hungerCost: 1,
     description: "Gather natural resources with a chance of success.",
   },
   eat: {
+    icon:"🍽️",
     label: "🍽️ Eat",
     hungerCost: 0,
     description: "Consume a small amount of food to restore some hunger.",
   },
   feast: {
+    icon: "🥣",
     label: "🥣 Feast",
     hungerCost: 0,
     description: "Use more food to completely restore hunger.",
   },
   plant: {
-    label: "🌱 Plant",
+    icon: "🌰",
+    label: "🌰 Plant",
     hungerCost: 1,
     description: "Use seeds to grow primitive wheat over time.",
   },
   grow: {
+    icon: "🌱",
     label: "🌱 Growing",
     hungerCost: 0,
     description: "The seeds planted are now growing.",
   },
   grind: {
+    icon:"🌀",
     label: "🌀 Grind",
     hungerCost: 1,
     description: "Manually grind wheat into flour by clicking.",
   },
   bake: {
+    icon:"🔥",
     label: "🔥 Bake",
     hungerCost: 1,
     description: "Bake flour into nourishing bread using fire.",
@@ -134,10 +141,17 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
 
   eat: (state, resourceId) => {
     if (!resourceId) return false;
-
+    
     const def = resources[resourceId];
     const cost = def?.eatCost ?? 1;
     const restore = def?.hungerRestore ?? 0;
+
+    console.log("[EAT DEBUG]", {
+      resourceId,
+      cost,
+      before: state.getResources()[resourceId],
+      after: state.getResources()[resourceId] - cost,
+    });
 
     state.setResources(prev => ({
       ...prev,
