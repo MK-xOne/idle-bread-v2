@@ -82,8 +82,7 @@ export default function PageOne() {
         </div>
       )}
 
-      {resources.seeds > 0 && <PlantingPanel />}
-
+      {unlockedTechs.has("unlockPlanting") && <PlantingPanel />}
 
       {/* Centered action buttons */}
       <div

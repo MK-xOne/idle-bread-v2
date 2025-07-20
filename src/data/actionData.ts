@@ -265,3 +265,9 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
     return true;
   },
 };
+
+export const actionData = {
+  labels: actionLabels,
+  mechanics,
+};
+
