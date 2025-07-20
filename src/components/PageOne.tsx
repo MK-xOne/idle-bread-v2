@@ -82,7 +82,11 @@ export default function PageOne() {
         </div>
       )}
 
-      {unlockedTechs.has("unlockPlanting") && <PlantingPanel />}
+      {unlockedTechs.has("unlockPlanting") && (
+        <div style={{ position: "fixed", bottom: "1rem", left: "50%", transform: "translateX(-50%)", zIndex: 999 }}>
+          <PlantingPanel />
+        </div>
+      )}
 
       {/* Centered action buttons */}
       <div

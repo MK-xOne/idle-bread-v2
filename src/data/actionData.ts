@@ -183,14 +183,20 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 
   plant: (state) => {
+    if ((state.resources.seeds ?? 0) < 1) {
+      return false; // Not enough seeds
+    }
+
     state.setResources(prev => ({
       ...prev,
-      seeds: prev.seeds - 5,
+      seeds: prev.seeds - 1,
     }));
+
     state.setPrimitiveWheatPlanted(true);
     state.setPlantedAtTick(state.getTick());
     state.setReadyToHarvestPrimitiveWheat(false);
     trackInteraction(state.setResourceInteractions, "seeds", "plant", { attempted: true, succeeded: true });
+
     return true;
   },
 
