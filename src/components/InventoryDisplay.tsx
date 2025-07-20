@@ -15,6 +15,10 @@ import { resources as resourceMeta, type ResourceID } from "../data/resources";
  * different screen sizes and resource counts.
  */
 
+const shouldShowMax = (key: ResourceID) => {
+  // Only show max values for resources that the player has “understood”
+  return false; // Later you can unlock others dynamically
+};
 
 const formatLabel = (id: string) =>
   id
@@ -26,7 +30,6 @@ export const InventoryDisplay = () => {
 
   return (
     <div className="panel">
-      <h3>📦 Inventory</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem' }}>
         {(Object.entries(resources) as [ResourceID, number][])
           .filter(([key]) => discoveredResources.has(key))
@@ -38,12 +41,11 @@ export const InventoryDisplay = () => {
               <div
                 key={key}
                 style={{
-                  border: "1px solid #ccc",
                   padding: "0.5rem",
                   borderRadius: "4px",
                 }}
               >
-                <strong>{formatLabel(key)}</strong>: {value} / {max}
+                <strong>{formatLabel(key)}</strong>: {value}{shouldShowMax(key) ? ` / ${max}` : ""}
               </div>
             );
           })}

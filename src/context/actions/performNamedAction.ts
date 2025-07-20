@@ -3,7 +3,7 @@ import { actionRules } from '../rules/actionRules';
 import { resources } from '../../data/resources';
 import type { ResourceID } from '../../data/resources';
 import type { ActionType } from '../../data/actionData';
-import type { ActionResult } from '../types'; // ✅ correct
+import type { ActionResult } from '../types'; 
 
 export const performNamedAction = (
   state: GameStateHook,

@@ -1,5 +1,6 @@
 import { useGame } from '../context/GameContext';
 import { techTree, isTechDiscoverable } from '../data/tech';
+import { unlockTech } from "../context/logic/techHandlers";
 
 /**
  * TechnologyPanel Component
@@ -16,14 +17,13 @@ import { techTree, isTechDiscoverable } from '../data/tech';
  * through different ages or stages of the game.
  */
 
+
 export const TechnologyPanel = () => {
   const {
-    unlockedTechs,
-    unlockTech,
     resources,
     setResources,
+    unlockedTechs,
     hunger,
-    performAction,
   } = useGame();
 
   const canAfford = (cost: Partial<Record<string, number>>) => {
@@ -34,6 +34,8 @@ export const TechnologyPanel = () => {
 
   const handleUnlock = (techId: keyof typeof techTree) => {
     const tech = techTree[techId];
+    const gameState = useGame();
+
     if (!canAfford(tech.cost)) return;
 
     setResources(prev => {
@@ -44,34 +46,40 @@ export const TechnologyPanel = () => {
       return updated;
     });
 
-    unlockTech(techId);
+    // ✅ Call techHandlers.unlockTech with full state
+    unlockTech(techId, gameState);
+
   };
 
-
   return (
-      <div className="panel">
-      <h3>🧠 Technologies</h3>
-
+    <div className="panel">
       {Object.values(techTree).map((tech) => {
         const isUnlocked = unlockedTechs.has(tech.id);
         const isDiscoverable = isTechDiscoverable(tech, unlockedTechs);
 
-        if (isUnlocked || !isDiscoverable) return null;
+        if (isUnlocked || !isDiscoverable || !canAfford(tech.cost)) return null;
+
+        const isClickable = canAfford(tech.cost) && hunger > 0;
 
         return (
           <div key={tech.id} style={{ display: 'flex', justifyContent: 'center' }}>
-            <button
-              onClick={() => handleUnlock(tech.id)}
-              disabled={!canAfford(tech.cost) || hunger <= 0}
+            <div
+              onClick={() => isClickable && handleUnlock(tech.id)}
               style={{
-                display: 'block',
-                marginBottom: '0.5rem',
+                transition: 'all 0.2s ease',
+                boxShadow: isClickable ? '0 0 8px rgba(231, 211, 28, 0.61)' : 'none',
+                cursor: isClickable ? 'pointer' : 'not-allowed',
+                opacity: isClickable ? 1 : 0.4,
+                marginBottom: '0.75rem',
                 textAlign: 'center',
-                width: '100%',
+                color: 'white',
+                backgroundColor: 'black',
+                padding: '0.5rem',
+                borderRadius: '6px',
               }}
             >
               <div>
-                {tech.icon} {tech.name}{' '}
+                {tech.icon} {tech.name}
               </div>
               <span
                 style={{
@@ -84,12 +92,10 @@ export const TechnologyPanel = () => {
                   .map(([k, v]) => `${v} ${k}`)
                   .join(' + ')})
               </span>
-            </button>
+            </div>
           </div>
         );
       })}
-
-
     </div>
   );
 };

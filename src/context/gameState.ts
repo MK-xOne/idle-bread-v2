@@ -42,7 +42,7 @@ export const useGameState = () => {
   const [trackerState,         setTracker             ] = useState<TrackerState> ({tracker: {}, __ticks:0,});
 
   /* progression / discovery */
-  const [discoveredResources,  _setDiscovered         ] = useState<Set<ResourceID>>(new Set(['wildWheat', 'rocks']));
+  const [discoveredResources,  _setDiscovered         ] = useState<Set<ResourceID>>(new Set(['rocks']));
   const [unlockedActions,      setUnlockedActions     ] = useState<Set<string>>(initialUnlockedActions);
   const [unlockedTechs,        setUnlockedTechs       ] = useState<Set<TechID>>(new Set());
   const [maxResourceBonuses,   setMaxResourceBonuses  ] = useState<Partial<Record<ResourceID, number>>>({});
