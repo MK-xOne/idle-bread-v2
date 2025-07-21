@@ -4,71 +4,35 @@ import { actionLabels } from "../data/actionData";
 import { actionData } from "../data/actionData";
 import { mechanics } from "../data/actionData";
 
-
-type SlotState = {
-  planted: boolean;
-  plantedAt: number | null;
-  readyToHarvest: boolean;
-};
-
 export default function PlantingPanel() {
-const state = useGame();
-
-
-  const [slots, setSlots] = useState<SlotState[]>(
-    Array.from({ length: 18 }, () => ({
-      planted: false,
-      plantedAt: null,
-      readyToHarvest: false,
-    }))
-  );
-
-  // Track plant growth based on ticks
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const currentTick = state.getTick();
-      setSlots((prev) =>
-        prev.map((slot) =>
-          slot.planted && !slot.readyToHarvest && slot.plantedAt !== null && currentTick - slot.plantedAt >= 20
-            ? { ...slot, readyToHarvest: true }
-            : slot
-        )
-      );
-    }, 1000); // 1 second poll
-    return () => clearInterval(interval);
-  }, []);
-
+  const state = useGame();
+  const { farmSlots, getTick, performNamedAction } = state;
 
   // Handle plant or harvest per slot
   const handleClick = (index: number) => {
-    const slot = slots[index];
-      if (
-        !slot.planted &&
-        mechanics["plant"]?.(state)
-      ) {
-      const result = state.performNamedAction("primitiveWheat", "plant");
+    const slot = farmSlots[index];
+
+    if (slot.state === "empty") {
+      const result = performNamedAction("primitiveWheat", "plant");
       if (result?.succeeded) {
-        setSlots((prev) => {
-          const newSlots = [...prev];
-          newSlots[index] = {
-            planted: true,
-            plantedAt: state.getTick(),
-            readyToHarvest: false,
-          };
-          return newSlots;
+        state.perform((s) => {
+          s.farmSlots[index].state = "planted";
+          s.farmSlots[index].plantedTick = s.getTick();
         });
       }
-    } else if (slot.readyToHarvest) {
-      const result = state.performNamedAction("primitiveWheat", "harvest");
+    } else if (slot.state === "planted" && getTick() - (slot.plantedTick ?? 0) >= 5) {
+      const result = performNamedAction("primitiveWheat", "grow");
       if (result?.succeeded) {
-        setSlots((prev) => {
-          const newSlots = [...prev];
-          newSlots[index] = {
-            planted: false,
-            plantedAt: null,
-            readyToHarvest: false,
-          };
-          return newSlots;
+        state.perform((s) => {
+          s.farmSlots[index].state = "growing";
+        });
+      }
+    } else if (slot.state === "growing") {
+      const result = performNamedAction("primitiveWheat", "harvest");
+      if (result?.succeeded) {
+        state.perform((s) => {
+          s.farmSlots[index].state = "empty";
+          s.farmSlots[index].plantedTick = null;
         });
       }
     }
@@ -84,23 +48,21 @@ const state = useGame();
           gap: '8px',
         }}
       >
-        {slots.map((slot, index) => (
+        {farmSlots.map((slot: typeof farmSlots[number], index: number) => (
           <div
             key={index}
-            className={`w-10 h-10 flex items-center justify-center text-sm rounded
-              ${slot.readyToHarvest ? "bg-yellow-300" :
-                slot.planted ? "bg-green-400" :
-                "bg-gray-300"}
-              border border-white cursor-pointer hover:scale-105 transition-transform`}
+            className={`w-10 h-10 flex items-center justify-center text-sm rounded cursor-pointer
+              ${slot.state === "growing" ? "bg-yellow-300" :
+                slot.state === "planted" ? "bg-green-400" :
+                "bg-stone-500"}
+              hover:scale-105 transition-transform`}
             onClick={() => handleClick(index)}
           >
-            <div onClick={() => handleClick(index)}>
-              {slot.readyToHarvest
-                ? actionLabels["harvest"].icon
-                : slot.planted
-                  ? actionLabels["plant"].icon
-                  : "🟫"}
-            </div>
+          {slot.state === "growing"
+            ? actionLabels["harvest"].icon
+            : slot.state === "planted"
+              ? actionLabels["plant"].icon
+              : "🟫"}
           </div>
         ))}
       </div>

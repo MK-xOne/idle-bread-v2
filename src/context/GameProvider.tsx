@@ -19,6 +19,11 @@ import { actionLabels } from "../data/actionData";
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const gameState = useGameState();
 
+  const farmSlots = Array.from({ length: 18 }, () => ({
+  plantedTick: null,
+  state: "empty" as "empty" | "planted" | "growing" | "readyToHarvest",
+  }));
+
   // Performs a generic action
   const perform = (fn: (state: typeof gameState) => void) => {
     performAction(fn, gameState);
@@ -37,6 +42,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         ...gameState,
         perform,
         performNamedAction,
+        farmSlots,
       
       }}
     >

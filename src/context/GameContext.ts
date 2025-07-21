@@ -6,6 +6,11 @@ import type { ActionResult } from './actions/performNamedAction';
 export interface GameContextType extends GameStateHook {
   perform: (fn: (state: GameStateHook) => void) => void;
   performNamedAction: (resourceId: string, action: string) => ActionResult;
+  
+  farmSlots: {
+    plantedTick: number | null;
+    state: "empty" | "planted" | "growing" | "readyToHarvest";
+  }[];
 }
 
 // ✅ Export GameContext with correct type
