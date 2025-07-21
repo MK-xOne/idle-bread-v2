@@ -10,6 +10,7 @@ import { useGameState } from "./gameState";
 import { performAction } from "./actions/performAction";
 import { performNamedAction as doNamedAction } from "./actions/performNamedAction";
 import { actionLabels } from "../data/actionData";
+import { useEffect } from "react"; // make sure this is at the top
 
 /**
  * GameProvider
@@ -23,6 +24,22 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   plantedTick: null,
   state: "empty" as "empty" | "planted" | "growing" | "readyToHarvest",
   }));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTick = gameState.getTick();
+      gameState.perform((state) => {
+        state.farmSlots.forEach((slot, i) => {
+          if (slot.state === "planted" && currentTick - (slot.plantedTick ?? 0) >= 5) {
+            slot.state = "growing";
+          }
+        });
+      });
+    }, 1000); // 1-second interval, adjust if needed
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   // Performs a generic action
   const perform = (fn: (state: typeof gameState) => void) => {

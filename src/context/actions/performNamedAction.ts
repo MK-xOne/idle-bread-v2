@@ -72,6 +72,18 @@ export const performNamedAction = (
     state.setHunger(prev => Math.max(0, prev - 4) +1 );
   }
 
+  // Auto-grow any matured planted slots
+  const currentTick = state.getTick();
+    state.farmSlots.forEach((slot) => {
+      if (
+        slot.state === "planted" &&
+        slot.plantedTick !== null &&
+        currentTick - slot.plantedTick >= 5
+      ) {
+        slot.state = "growing";
+      }
+    });
+
   return {
     performed: true,
     amount: result.amount ?? 0,

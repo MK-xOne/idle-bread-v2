@@ -183,7 +183,7 @@ export const mechanics: Record<ActionType, MechanicFunction> = {
   },
 
   plant: (state) => {
-    if ((state.resources.seeds ?? 0) < 1) {
+    if ((state.resources.seeds ?? 0) < 5) {
       return false; // Not enough seeds
     }
 

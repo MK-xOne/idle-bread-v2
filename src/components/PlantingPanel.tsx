@@ -7,6 +7,14 @@ import { mechanics } from "../data/actionData";
 export default function PlantingPanel() {
   const state = useGame();
   const { farmSlots, getTick, performNamedAction } = state;
+  const [failedSlotIndex, setFailedSlotIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (failedSlotIndex !== null) {
+      const timer = setTimeout(() => setFailedSlotIndex(null), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [failedSlotIndex]);
 
   // Handle plant or harvest per slot
   const handleClick = (index: number) => {
@@ -19,6 +27,8 @@ export default function PlantingPanel() {
           s.farmSlots[index].state = "planted";
           s.farmSlots[index].plantedTick = s.getTick();
         });
+      } else {
+        setFailedSlotIndex(index);
       }
     } else if (slot.state === "planted" && getTick() - (slot.plantedTick ?? 0) >= 5) {
       const result = performNamedAction("primitiveWheat", "grow");
@@ -26,6 +36,8 @@ export default function PlantingPanel() {
         state.perform((s) => {
           s.farmSlots[index].state = "growing";
         });
+      } else {
+        setFailedSlotIndex(index);
       }
     } else if (slot.state === "growing") {
       const result = performNamedAction("primitiveWheat", "harvest");
@@ -34,9 +46,12 @@ export default function PlantingPanel() {
           s.farmSlots[index].state = "empty";
           s.farmSlots[index].plantedTick = null;
         });
+      } else {
+        setFailedSlotIndex(index);
       }
     }
   };
+
 
   return (
     <div className="panel w-full flex justify-center">
@@ -51,11 +66,12 @@ export default function PlantingPanel() {
         {farmSlots.map((slot: typeof farmSlots[number], index: number) => (
           <div
             key={index}
-            className={`w-10 h-10 flex items-center justify-center text-sm rounded cursor-pointer
-              ${slot.state === "growing" ? "bg-yellow-300" :
-                slot.state === "planted" ? "bg-green-400" :
-                "bg-stone-500"}
-              hover:scale-105 transition-transform`}
+              className={`w-10 h-10 flex items-center justify-center text-sm rounded cursor-pointer
+                ${failedSlotIndex === index ? "bg-red-400" :
+                  slot.state === "growing" ? "bg-yellow-300" :
+                  slot.state === "planted" ? "bg-green-400" :
+                  "bg-stone-500"}
+                hover:scale-105 transition-transform`}
             onClick={() => handleClick(index)}
           >
           {slot.state === "growing"
